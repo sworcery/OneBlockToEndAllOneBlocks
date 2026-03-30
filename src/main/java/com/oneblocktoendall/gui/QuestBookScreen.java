@@ -1,6 +1,7 @@
 package com.oneblocktoendall.gui;
 
 import com.oneblocktoendall.network.QuestSyncPayload;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -87,6 +88,48 @@ public class QuestBookScreen extends Screen {
                 tabPage++;
                 clearAndInit();
             }).dimensions(currentX, topY, 20, 20).build());
+        }
+
+        // Navigation bar at the bottom of the panel
+        int panelX = centerX - PANEL_WIDTH / 2;
+        int panelY = (this.height / 2) - PANEL_HEIGHT / 2;
+        int navY = panelY + PANEL_HEIGHT + 6;
+        int navBtnWidth = 42;
+        int navSpacing = 3;
+        String[] navLabels = {"Drops", "Stats", "Board", "Islands", "Team", "Gear"};
+        int totalNavWidth = navLabels.length * navBtnWidth + (navLabels.length - 1) * navSpacing;
+        int navStartX = centerX - totalNavWidth / 2;
+
+        for (int i = 0; i < navLabels.length; i++) {
+            final int idx = i;
+            addDrawableChild(ButtonWidget.builder(Text.literal(navLabels[i]), button -> {
+                onNavButton(idx);
+            }).dimensions(navStartX + i * (navBtnWidth + navSpacing), navY, navBtnWidth, 16).build());
+        }
+    }
+
+    private void onNavButton(int index) {
+        if (client == null) return;
+        switch (index) {
+            case 0 -> { // Drops
+                if (data != null) {
+                    ClientPlayNetworking.send(
+                            new com.oneblocktoendall.network.BlockPoolRequestPayload(data.currentPhase()));
+                }
+            }
+            case 1 -> { // Stats
+                ClientPlayNetworking.send(new com.oneblocktoendall.network.StatsRequestPayload());
+            }
+            case 2 -> { // Leaderboard
+                ClientPlayNetworking.send(new com.oneblocktoendall.network.LeaderboardRequestPayload());
+            }
+            case 3 -> { // Islands
+                ClientPlayNetworking.send(new com.oneblocktoendall.network.IslandListRequestPayload());
+            }
+            case 4 -> { // Team
+                ClientPlayNetworking.send(new com.oneblocktoendall.network.TeamActionPayload("VIEW", ""));
+            }
+            case 5 -> client.setScreen(new SettingsScreen(this)); // Settings
         }
     }
 

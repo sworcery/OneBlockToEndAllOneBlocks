@@ -124,6 +124,48 @@ public class PhaseManager {
     }
 
     /**
+     * Get item IDs that are new in this phase (not in any earlier phase's block pool).
+     */
+    public static List<String> getNewItemsForPhase(int phaseId) {
+        Set<String> previousItems = new HashSet<>();
+        for (int i = 1; i < phaseId; i++) {
+            Phase p = PHASES.get(i);
+            if (p != null) {
+                for (BlockPoolEntry e : p.blockPool()) previousItems.add(e.itemId());
+            }
+        }
+        List<String> newItems = new ArrayList<>();
+        Phase current = PHASES.get(phaseId);
+        if (current != null) {
+            for (BlockPoolEntry e : current.blockPool()) {
+                if (!previousItems.contains(e.itemId())) newItems.add(e.itemId());
+            }
+        }
+        return newItems;
+    }
+
+    /**
+     * Get entity IDs that are new in this phase (not in any earlier phase's mob pool).
+     */
+    public static List<String> getNewMobsForPhase(int phaseId) {
+        Set<String> previousMobs = new HashSet<>();
+        for (int i = 1; i < phaseId; i++) {
+            Phase p = PHASES.get(i);
+            if (p != null) {
+                for (MobSpawnEntry e : p.mobSpawns()) previousMobs.add(e.entityId());
+            }
+        }
+        List<String> newMobs = new ArrayList<>();
+        Phase current = PHASES.get(phaseId);
+        if (current != null) {
+            for (MobSpawnEntry e : current.mobSpawns()) {
+                if (!previousMobs.contains(e.entityId())) newMobs.add(e.entityId());
+            }
+        }
+        return newMobs;
+    }
+
+    /**
      * Load all phase definitions from the bundled phases.json resource file.
      */
     private static void loadPhases() {

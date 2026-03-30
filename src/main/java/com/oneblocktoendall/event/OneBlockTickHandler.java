@@ -5,12 +5,16 @@ import com.oneblocktoendall.block.ModBlocks;
 import com.oneblocktoendall.block.OneBlock;
 import com.oneblocktoendall.data.OneBlockWorldState;
 import com.oneblocktoendall.network.ModNetworking;
+import com.oneblocktoendall.network.PhaseAdvancePayload;
+import com.oneblocktoendall.network.QuestSyncPayload;
+import com.oneblocktoendall.network.ToastPayload;
 import com.oneblocktoendall.phase.Phase;
 import com.oneblocktoendall.phase.PhaseManager;
 import com.oneblocktoendall.quest.PlayerProgress;
 import com.oneblocktoendall.quest.Quest;
 import com.oneblocktoendall.quest.QuestManager;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -117,10 +121,13 @@ public class OneBlockTickHandler {
                         .ifPresent(quest -> {
                             player.sendMessage(Text.literal("\u2714 Quest Complete: " + quest.name())
                                     .formatted(Formatting.GREEN, Formatting.BOLD));
-                            // Play quest completion sound
                             player.getServerWorld().playSound(null, player.getBlockPos(),
                                     SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,
                                     SoundCategory.PLAYERS, 1.0f, 1.0f);
+                            // Send toast notification
+                            ModNetworking.sendToast(player, new ToastPayload(
+                                    ToastPayload.TYPE_QUEST, player.getName().getString(),
+                                    "", quest.name(), 0));
                             state.markDirty();
                         });
             }
@@ -212,12 +219,31 @@ public class OneBlockTickHandler {
                 .formatted(Formatting.GRAY));
         player.sendMessage(Text.empty());
 
-        // Show new quests
+        // Show new quests in chat
         for (Quest quest : nextPhase.quests()) {
             player.sendMessage(Text.literal(" \u2022 " + quest.name() + " - " + quest.description())
                     .formatted(Formatting.YELLOW));
         }
         player.sendMessage(Text.empty());
+
+        // Send phase celebration screen data
+        List<String> newBlocks = PhaseManager.getNewItemsForPhase(newPhase);
+        List<String> newMobs = PhaseManager.getNewMobsForPhase(newPhase);
+        List<QuestSyncPayload.QuestStatus> questStatuses = new java.util.ArrayList<>();
+        for (Quest quest : nextPhase.quests()) {
+            questStatuses.add(new QuestSyncPayload.QuestStatus(
+                    quest.id(), quest.name(), quest.description(), 0, quest.count(), false));
+        }
+        ServerPlayNetworking.send(player, new PhaseAdvancePayload(
+                newPhase, nextPhase.name(), newBlocks, newMobs, questStatuses));
+
+        // Broadcast phase toast to all players
+        String playerName = player.getName().getString();
+        ModNetworking.broadcastToast(player.server, new ToastPayload(
+                ToastPayload.TYPE_PHASE_BROADCAST, playerName, nextPhase.name(), "", newPhase));
+        // Personal toast
+        ModNetworking.sendToast(player, new ToastPayload(
+                ToastPayload.TYPE_PHASE, playerName, nextPhase.name(), "", newPhase));
 
         // --- BOSS WAVE --- spawn a hostile mob every 5th phase completion
         if (currentPhase % 5 == 0) {
