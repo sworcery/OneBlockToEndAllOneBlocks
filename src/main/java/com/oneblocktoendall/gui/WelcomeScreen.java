@@ -108,6 +108,11 @@ public class WelcomeScreen extends Screen {
     }
 
     @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        // Skip default blur — we draw our own dark overlay in render()
+    }
+
+    @Override
     public boolean shouldPause() {
         return false; // Don't pause the game
     }
