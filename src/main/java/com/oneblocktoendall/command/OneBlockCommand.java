@@ -1,10 +1,13 @@
 package com.oneblocktoendall.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.oneblocktoendall.block.ModBlocks;
 import com.oneblocktoendall.block.OneBlock;
 import com.oneblocktoendall.data.OneBlockWorldState;
+import com.oneblocktoendall.network.AdminRequestPayload;
+import com.oneblocktoendall.network.ModNetworking;
 import com.oneblocktoendall.phase.Phase;
 import com.oneblocktoendall.phase.PhaseManager;
 import com.oneblocktoendall.quest.PlayerProgress;
@@ -12,7 +15,6 @@ import com.oneblocktoendall.quest.Quest;
 import com.oneblocktoendall.quest.QuestManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -36,13 +38,30 @@ public class OneBlockCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("oneblock")
+                .then(CommandManager.literal("start")
+                        .executes(OneBlockCommand::startChallenge))
                 .then(CommandManager.literal("quests")
                         .executes(OneBlockCommand::showQuests))
                 .then(CommandManager.literal("phase")
                         .executes(OneBlockCommand::showPhase))
                 .then(CommandManager.literal("reset")
                         .executes(OneBlockCommand::resetChallenge))
+                .then(CommandManager.literal("leaderboard")
+                        .executes(OneBlockCommand::showLeaderboard))
+                .then(CommandManager.literal("visit")
+                        .then(CommandManager.argument("player", StringArgumentType.word())
+                                .executes(OneBlockCommand::visitPlayer)))
+                .then(CommandManager.literal("admin")
+                        .requires(source -> source.hasPermissionLevel(2))
+                        .executes(OneBlockCommand::openAdmin))
         );
+    }
+
+    private static int startChallenge(CommandContext<ServerCommandSource> context) {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) return 0;
+        initializeChallenge(player);
+        return 1;
     }
 
     /**
@@ -76,6 +95,8 @@ public class OneBlockCommand {
         progress.setStarted(true);
         progress.setCurrentPhase(1);
         progress.setOneBlockPos(blockPos);
+        progress.setSpectating(false);
+        progress.setChallengeStartTime(world.getTime());
         state.markDirty();
 
         // Teleport player on top of the one block
@@ -224,6 +245,59 @@ public class OneBlockCommand {
         // Re-initialize immediately
         initializeChallenge(player);
 
+        return 1;
+    }
+
+    private static int showLeaderboard(CommandContext<ServerCommandSource> context) {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) return 0;
+        OneBlockWorldState state = OneBlockWorldState.get(player.server);
+        var entries = state.buildLeaderboard(player.server);
+        player.sendMessage(Text.empty());
+        player.sendMessage(Text.literal("=== Leaderboard ===").formatted(Formatting.GOLD, Formatting.BOLD));
+        for (int i = 0; i < entries.size(); i++) {
+            var e = entries.get(i);
+            Formatting color = e.name().equals(player.getName().getString()) ? Formatting.GOLD : Formatting.WHITE;
+            player.sendMessage(Text.literal((i + 1) + ". " + e.name() +
+                    " - Phase " + e.phase() + " | " + e.questsCompleted() + " quests | " +
+                    e.blocksBroken() + " blocks").formatted(color));
+        }
+        player.sendMessage(Text.empty());
+        return 1;
+    }
+
+    private static int visitPlayer(CommandContext<ServerCommandSource> context) {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) return 0;
+        String targetName = StringArgumentType.getString(context, "player");
+        ServerPlayerEntity target = player.server.getPlayerManager().getPlayer(targetName);
+        if (target == null) {
+            player.sendMessage(Text.literal("Player not found or offline!").formatted(Formatting.RED));
+            return 0;
+        }
+        OneBlockWorldState state = OneBlockWorldState.get(player.server);
+        PlayerProgress targetProgress = state.getProgress(target.getUuid());
+        if (targetProgress == null || !targetProgress.isStarted()) {
+            player.sendMessage(Text.literal("That player hasn't started the challenge!").formatted(Formatting.RED));
+            return 0;
+        }
+        if (!targetProgress.isAllowVisitors()) {
+            player.sendMessage(Text.literal("That player doesn't allow visitors!").formatted(Formatting.RED));
+            return 0;
+        }
+        BlockPos pos = targetProgress.getOneBlockPos();
+        player.teleport(player.getServerWorld(),
+                pos.getX() + 2.5, pos.getY() + 1.0, pos.getZ() + 0.5,
+                Set.of(), player.getYaw(), player.getPitch(), false);
+        player.sendMessage(Text.literal("Teleported to " + targetName + "'s island!").formatted(Formatting.GREEN));
+        return 1;
+    }
+
+    private static int openAdmin(CommandContext<ServerCommandSource> context) {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) return 0;
+        player.sendMessage(Text.literal("Opening admin panel... Press J > Gear to use the GUI.")
+                .formatted(Formatting.GOLD));
         return 1;
     }
 

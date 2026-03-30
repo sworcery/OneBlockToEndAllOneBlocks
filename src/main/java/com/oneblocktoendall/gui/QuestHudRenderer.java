@@ -1,5 +1,6 @@
 package com.oneblocktoendall.gui;
 
+import com.oneblocktoendall.config.ModConfig;
 import com.oneblocktoendall.network.QuestSyncPayload;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
@@ -32,30 +33,36 @@ public class QuestHudRenderer {
 
     private static void render(DrawContext context, RenderTickCounter tickCounter) {
         if (cachedData == null) return;
+        if (!ModConfig.get().hudEnabled) return;
 
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client.getDebugHud().shouldShowDebugHud()) return; // Don't show during F3
-        if (client.currentScreen != null) return; // Don't show when a screen is open
+        if (client.getDebugHud().shouldShowDebugHud()) return;
+        if (client.currentScreen != null) return;
 
         TextRenderer textRenderer = client.textRenderer;
         int screenWidth = client.getWindow().getScaledWidth();
+        int screenHeight = client.getWindow().getScaledHeight();
 
-        // Position: top-right corner with padding
-        int x = screenWidth - 170;
-        int y = 10;
+        float scale = ModConfig.get().hudScale;
+        int panelWidth = 160;
+
+        // Estimate panel height for position calculation
+        int questCount = (int) cachedData.quests().stream()
+                .filter(q -> !q.completed()).count();
+        int estimatedHeight = 20 + (questCount * (12 + 6 + 4)) + 5;
+        if (questCount == 0) estimatedHeight = 35;
+
+        int x = ModConfig.get().hudPosition.getX((int)(screenWidth / scale), panelWidth);
+        int y = ModConfig.get().hudPosition.getY((int)(screenHeight / scale), estimatedHeight);
+
+        if (scale != 1.0f) {
+            context.getMatrices().push();
+            context.getMatrices().scale(scale, scale, 1.0f);
+        }
         int lineHeight = 12;
         int barWidth = 80;
         int barHeight = 6;
-
-        // Background panel
-        int panelWidth = 160;
-        int questCount = (int) cachedData.quests().stream()
-                .filter(q -> !q.completed()).count();
-        int panelHeight = 20 + (questCount * (lineHeight + barHeight + 4)) + 5;
-
-        if (questCount == 0) {
-            panelHeight = 35;
-        }
+        int panelHeight = estimatedHeight;
 
         context.fill(x - 5, y - 5, x + panelWidth + 5, y + panelHeight,
                 0x80000000); // Semi-transparent black
@@ -67,6 +74,7 @@ public class QuestHudRenderer {
 
         if (questCount == 0) {
             context.drawText(textRenderer, "All quests complete!", x, y, 0x55FF55, true);
+            if (scale != 1.0f) context.getMatrices().pop();
             return;
         }
 
@@ -97,5 +105,7 @@ public class QuestHudRenderer {
 
             y += barHeight + 4;
         }
+
+        if (scale != 1.0f) context.getMatrices().pop();
     }
 }
