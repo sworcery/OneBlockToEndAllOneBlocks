@@ -19,7 +19,7 @@ import net.minecraft.text.Text;
 public class QuestBookScreen extends Screen {
 
     private static final int PANEL_WIDTH = 300;
-    private static final int PANEL_HEIGHT = 200;
+    private static final int PANEL_HEIGHT = 240;
     private static final int TABS_PER_PAGE = 7;
 
     private final QuestSyncPayload data;
@@ -175,12 +175,15 @@ public class QuestBookScreen extends Screen {
 
         // Quest list
         int questY = panelY + 35;
-        int lineHeight = 14;
+        int lineHeight = 12;
         int barWidth = 150;
-        int barHeight = 8;
+        int barHeight = 6;
+        int maxQuestY = panelY + PANEL_HEIGHT - 20;
 
         if (isCurrentPhase && data.quests() != null) {
             for (QuestSyncPayload.QuestStatus quest : data.quests()) {
+                if (questY + lineHeight > maxQuestY) break;
+
                 // Checkmark or bullet
                 String prefix = quest.completed() ? "\u2714 " : "\u2022 ";
                 int nameColor = quest.completed() ? 0xFF55FF55 : 0xFFFFFFFF;
@@ -218,9 +221,9 @@ public class QuestBookScreen extends Screen {
                     context.drawTextWithShadow(textRenderer, progressStr,
                             barX + barWidth + 8, barY - 1, 0xFFCCCCCC);
 
-                    questY += lineHeight * 2 + barHeight + 8;
+                    questY += lineHeight * 2 + barHeight + 10;
                 } else {
-                    questY += lineHeight * 2 + 4;
+                    questY += lineHeight * 2 + 6;
                 }
             }
         } else if (!isCurrentPhase) {
