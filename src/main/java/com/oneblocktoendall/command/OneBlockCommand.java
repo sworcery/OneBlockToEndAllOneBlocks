@@ -1,0 +1,253 @@
+package com.oneblocktoendall.command;
+
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.context.CommandContext;
+import com.oneblocktoendall.block.ModBlocks;
+import com.oneblocktoendall.block.OneBlock;
+import com.oneblocktoendall.data.OneBlockWorldState;
+import com.oneblocktoendall.phase.Phase;
+import com.oneblocktoendall.phase.PhaseManager;
+import com.oneblocktoendall.quest.PlayerProgress;
+import com.oneblocktoendall.quest.Quest;
+import com.oneblocktoendall.quest.QuestManager;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
+
+import java.util.Set;
+
+/**
+ * The /oneblock command — the player's interface for managing their challenge.
+ *
+ * The challenge auto-starts when a player first joins a world.
+ * Commands are for info and reset only:
+ *   /oneblock quests — Show current quest progress in chat
+ *   /oneblock phase  — Show current phase info
+ *   /oneblock reset  — Reset progress and start over
+ */
+public class OneBlockCommand {
+
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register(CommandManager.literal("oneblock")
+                .then(CommandManager.literal("quests")
+                        .executes(OneBlockCommand::showQuests))
+                .then(CommandManager.literal("phase")
+                        .executes(OneBlockCommand::showPhase))
+                .then(CommandManager.literal("reset")
+                        .executes(OneBlockCommand::resetChallenge))
+        );
+    }
+
+    /**
+     * Initialize the one block challenge for a player.
+     * Called automatically on first join (from OneBlockMod) or after a reset.
+     * Safe to call multiple times — skips if already started.
+     *
+     * Places the one block at Y=200 and clears a large void pocket around it
+     * so the mod works with ANY world type (normal, flat, custom, etc.).
+     */
+    public static void initializeChallenge(ServerPlayerEntity player) {
+        OneBlockWorldState state = OneBlockWorldState.get(player.server);
+        PlayerProgress progress = state.getOrCreateProgress(player.getUuid());
+
+        if (progress.isStarted()) return;
+
+        ServerWorld world = player.getServerWorld();
+
+        // Place the one block high up so it works in any world type
+        BlockPos blockPos = new BlockPos(0, 200, 0);
+
+        // Clear a void pocket around the block position (21x31x21 area)
+        // This removes any terrain that might exist at this height
+        clearArea(world, blockPos, 10, 10, 20);
+
+        // Now place the one block
+        world.setBlockState(blockPos, ModBlocks.ONE_BLOCK.getDefaultState()
+                .with(OneBlock.PHASE, 1));
+
+        // Initialize player progress
+        progress.setStarted(true);
+        progress.setCurrentPhase(1);
+        progress.setOneBlockPos(blockPos);
+        state.markDirty();
+
+        // Teleport player on top of the one block
+        player.teleport(world, blockPos.getX() + 0.5, blockPos.getY() + 1.0,
+                blockPos.getZ() + 0.5, Set.of(), player.getYaw(), player.getPitch(), true);
+
+        // Set spawn point so they respawn here
+        player.setSpawnPoint(world.getRegistryKey(), blockPos.up(), 0f, true, false);
+
+        // Give starter kit — water bucket + bread to survive the first few minutes
+        player.getInventory().insertStack(new ItemStack(Items.WATER_BUCKET, 1));
+        player.getInventory().insertStack(new ItemStack(Items.BREAD, 3));
+
+        // Welcome message
+        player.sendMessage(Text.empty());
+        player.sendMessage(Text.literal("=== One Block to Rule Them All ===")
+                .formatted(Formatting.GOLD, Formatting.BOLD));
+        player.sendMessage(Text.literal("Your challenge begins! Break the block beneath you.")
+                .formatted(Formatting.GREEN));
+        player.sendMessage(Text.literal("Complete quests to unlock new phases and resources.")
+                .formatted(Formatting.GRAY));
+        player.sendMessage(Text.literal("Press J to open your Quest Book.")
+                .formatted(Formatting.GRAY));
+        player.sendMessage(Text.empty());
+    }
+
+    /**
+     * /oneblock quests — Display current quest progress.
+     */
+    private static int showQuests(CommandContext<ServerCommandSource> context) {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) return 0;
+
+        OneBlockWorldState state = OneBlockWorldState.get(player.server);
+        PlayerProgress progress = state.getProgress(player.getUuid());
+
+        if (progress == null || !progress.isStarted()) {
+            player.sendMessage(Text.literal("You haven't started the challenge yet! Use /oneblock start")
+                    .formatted(Formatting.RED));
+            return 0;
+        }
+
+        Phase phase = PhaseManager.getPhase(progress.getCurrentPhase());
+        if (phase == null) return 0;
+
+        player.sendMessage(Text.empty());
+        player.sendMessage(Text.literal("=== Phase " + phase.id() + ": " + phase.name() + " ===")
+                .formatted(Formatting.GOLD, Formatting.BOLD));
+
+        for (Quest quest : phase.quests()) {
+            boolean completed = progress.isQuestCompleted(quest.id());
+            int questProgress = QuestManager.getQuestProgress(player, quest, progress);
+
+            Formatting color = completed ? Formatting.GREEN : Formatting.WHITE;
+            String checkmark = completed ? " \u2714 " : " \u2022 ";
+            String progressText = completed ? "" :
+                    " [" + questProgress + "/" + quest.count() + "]";
+
+            player.sendMessage(Text.literal(checkmark + quest.name() + progressText)
+                    .formatted(color)
+                    .append(Text.literal(" - " + quest.description())
+                            .formatted(Formatting.GRAY)));
+        }
+
+        if (QuestManager.isPhaseComplete(progress)) {
+            if (progress.getCurrentPhase() < PhaseManager.getMaxPhase()) {
+                player.sendMessage(Text.literal("\nAll quests complete! Advancing to next phase...")
+                        .formatted(Formatting.GREEN, Formatting.BOLD));
+            } else {
+                player.sendMessage(Text.literal("\nYou've completed ALL phases! Congratulations!")
+                        .formatted(Formatting.GOLD, Formatting.BOLD));
+            }
+        }
+
+        player.sendMessage(Text.empty());
+        return 1;
+    }
+
+    /**
+     * /oneblock phase — Show current phase info.
+     */
+    private static int showPhase(CommandContext<ServerCommandSource> context) {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) return 0;
+
+        OneBlockWorldState state = OneBlockWorldState.get(player.server);
+        PlayerProgress progress = state.getProgress(player.getUuid());
+
+        if (progress == null || !progress.isStarted()) {
+            player.sendMessage(Text.literal("You haven't started the challenge yet! Use /oneblock start")
+                    .formatted(Formatting.RED));
+            return 0;
+        }
+
+        Phase phase = PhaseManager.getPhase(progress.getCurrentPhase());
+        if (phase == null) return 0;
+
+        int completed = (int) phase.quests().stream()
+                .filter(q -> progress.isQuestCompleted(q.id())).count();
+        int total = phase.quests().size();
+
+        player.sendMessage(Text.empty());
+        player.sendMessage(Text.literal("Phase " + phase.id() + "/" + PhaseManager.getMaxPhase()
+                        + ": " + phase.name())
+                .formatted(Formatting.GOLD, Formatting.BOLD));
+        player.sendMessage(Text.literal("Quests: " + completed + "/" + total + " completed")
+                .formatted(completed == total ? Formatting.GREEN : Formatting.YELLOW));
+        player.sendMessage(Text.literal("Block pool: " + phase.blockPool().size() + " items")
+                .formatted(Formatting.GRAY));
+        player.sendMessage(Text.literal("Mob spawn chance: " +
+                        (int)(phase.mobSpawnChance() * 100) + "%")
+                .formatted(Formatting.GRAY));
+        player.sendMessage(Text.empty());
+
+        return 1;
+    }
+
+    /**
+     * /oneblock reset — Reset the player's challenge progress.
+     */
+    private static int resetChallenge(CommandContext<ServerCommandSource> context) {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) return 0;
+
+        OneBlockWorldState state = OneBlockWorldState.get(player.server);
+        PlayerProgress progress = state.getProgress(player.getUuid());
+
+        if (progress == null || !progress.isStarted()) {
+            player.sendMessage(Text.literal("Nothing to reset — you haven't started yet!")
+                    .formatted(Formatting.YELLOW));
+            return 0;
+        }
+
+        // Reset progress completely
+        BlockPos blockPos = progress.getOneBlockPos();
+        progress.resetAll();
+        state.markDirty();
+
+        // Remove the one block and clear the area again
+        ServerWorld world = player.getServerWorld();
+        clearArea(world, blockPos, 10, 10, 20);
+
+        player.sendMessage(Text.literal("Challenge reset! Re-initializing...")
+                .formatted(Formatting.GREEN));
+
+        // Re-initialize immediately
+        initializeChallenge(player);
+
+        return 1;
+    }
+
+    /**
+     * Clear a large area of blocks around the given center position.
+     * Creates a void pocket so the one block floats in open air.
+     *
+     * @param world       The server world
+     * @param center      Center position (the one block location)
+     * @param radius      Horizontal radius to clear (blocks in X/Z directions)
+     * @param clearBelow  How many blocks below center to clear
+     * @param clearAbove  How many blocks above center to clear
+     */
+    private static void clearArea(ServerWorld world, BlockPos center,
+                                   int radius, int clearBelow, int clearAbove) {
+        for (int x = -radius; x <= radius; x++) {
+            for (int z = -radius; z <= radius; z++) {
+                for (int y = -clearBelow; y <= clearAbove; y++) {
+                    BlockPos pos = center.add(x, y, z);
+                    if (!world.getBlockState(pos).isAir()) {
+                        world.removeBlock(pos, false);
+                    }
+                }
+            }
+        }
+    }
+}

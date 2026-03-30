@@ -1,0 +1,29 @@
+{
+    "variants": {
+        "phase=1": { "model": "oneblocktoendall:block/one_block_phase_1" },
+        "phase=2": { "model": "oneblocktoendall:block/one_block_phase_2" },
+        "phase=3": { "model": "oneblocktoendall:block/one_block_phase_3" },
+        "phase=4": { "model": "oneblocktoendall:block/one_block_phase_4" },
+        "phase=5": { "model": "oneblocktoendall:block/one_block_phase_5" },
+        "phase=6": { "model": "oneblocktoendall:block/one_block_phase_6" },
+        "phase=7": { "model": "oneblocktoendall:block/one_block_phase_7" },
+        "phase=8": { "model": "oneblocktoendall:block/one_block_phase_8" },
+        "phase=9": { "model": "oneblocktoendall:block/one_block_phase_9" },
+        "phase=10": { "model": "oneblocktoendall:block/one_block_phase_10" },
+        "phase=11": { "model": "oneblocktoendall:block/one_block_phase_11" },
+        "phase=12": { "model": "oneblocktoendall:block/one_block_phase_12" },
+        "phase=13": { "model": "oneblocktoendall:block/one_block_phase_13" },
+        "phase=14": { "model": "oneblocktoendall:block/one_block_phase_14" },
+        "phase=15": { "model": "oneblocktoendall:block/one_block_phase_15" },
+        "phase=16": { "model": "oneblocktoendall:block/one_block_phase_16" },
+        "phase=17": { "model": "oneblocktoendall:block/one_block_phase_17" },
+        "phase=18": { "model": "oneblocktoendall:block/one_block_phase_18" },
+        "phase=19": { "model": "oneblocktoendall:block/one_block_phase_19" },
+        "phase=20": { "model": "oneblocktoendall:block/one_block_phase_20" },
+        "phase=21": { "model": "oneblocktoendall:block/one_block_phase_21" },
+        "phase=22": { "model": "oneblocktoendall:block/one_block_phase_22" },
+        "phase=23": { "model": "oneblocktoendall:block/one_block_phase_23" },
+        "phase=24": { "model": "oneblocktoendall:block/one_block_phase_24" },
+        "phase=25": { "model": "oneblocktoendall:block/one_block_phase_25" }
+    }
+}
