@@ -72,6 +72,9 @@ public class OneBlockCommand {
      * Places the one block at Y=200 and clears a large void pocket around it
      * so the mod works with ANY world type (normal, flat, custom, etc.).
      */
+    /** Distance between player islands in blocks. */
+    private static final int ISLAND_SPACING = 500;
+
     public static void initializeChallenge(ServerPlayerEntity player) {
         OneBlockWorldState state = OneBlockWorldState.get(player.server);
         PlayerProgress progress = state.getOrCreateProgress(player.getUuid());
@@ -80,11 +83,23 @@ public class OneBlockCommand {
 
         ServerWorld world = player.getServerWorld();
 
-        // Place the one block high up so it works in any world type
-        BlockPos blockPos = new BlockPos(0, 200, 0);
+        // Each player gets a unique island position spread 500 blocks apart
+        // Player index is based on how many players have ever started
+        int playerIndex = (int) state.getAllProgress().values().stream()
+                .filter(p -> p.isStarted() || p.getPlayerId().equals(player.getUuid()))
+                .count();
+        // Spiral layout: place islands along X axis spaced apart
+        // Player 0 -> (0, 200, 0), Player 1 -> (500, 200, 0), Player 2 -> (-500, 200, 0), etc.
+        int x;
+        if (playerIndex <= 1) {
+            x = 0; // First player at origin
+        } else {
+            int offset = (playerIndex / 2) * ISLAND_SPACING;
+            x = (playerIndex % 2 == 0) ? offset : -offset;
+        }
+        BlockPos blockPos = new BlockPos(x, 200, 0);
 
         // Clear a void pocket around the block position (21x31x21 area)
-        // This removes any terrain that might exist at this height
         clearArea(world, blockPos, 10, 10, 20);
 
         // Now place the one block
@@ -230,20 +245,35 @@ public class OneBlockCommand {
             return 0;
         }
 
-        // Reset progress completely
-        BlockPos blockPos = progress.getOneBlockPos();
+        // Save block position before reset so we reuse the same island spot
+        BlockPos savedPos = progress.getOneBlockPos();
         progress.resetAll();
         state.markDirty();
 
-        // Remove the one block and clear the area again
+        // Clear the area at the existing island position
         ServerWorld world = player.getServerWorld();
-        clearArea(world, blockPos, 10, 10, 20);
+        clearArea(world, savedPos, 10, 10, 20);
 
-        player.sendMessage(Text.literal("Challenge reset! Re-initializing...")
+        // Re-initialize at the same position (not a new slot)
+        progress.setStarted(true);
+        progress.setCurrentPhase(1);
+        progress.setOneBlockPos(savedPos);
+        progress.setSpectating(false);
+        progress.setChallengeStartTime(world.getTime());
+        state.markDirty();
+
+        world.setBlockState(savedPos, ModBlocks.ONE_BLOCK.getDefaultState()
+                .with(OneBlock.PHASE, 1));
+
+        player.teleport(world, savedPos.getX() + 0.5, savedPos.getY() + 1.0,
+                savedPos.getZ() + 0.5, Set.of(), player.getYaw(), player.getPitch(), true);
+        player.setSpawnPoint(world.getRegistryKey(), savedPos.up(), 0f, true, false);
+
+        player.getInventory().insertStack(new ItemStack(Items.WATER_BUCKET, 1));
+        player.getInventory().insertStack(new ItemStack(Items.BREAD, 3));
+
+        player.sendMessage(Text.literal("Challenge reset! Starting fresh at your island.")
                 .formatted(Formatting.GREEN));
-
-        // Re-initialize immediately
-        initializeChallenge(player);
 
         return 1;
     }
