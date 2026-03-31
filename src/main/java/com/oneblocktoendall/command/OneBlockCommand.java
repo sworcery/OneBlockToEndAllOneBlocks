@@ -13,16 +13,26 @@ import com.oneblocktoendall.phase.PhaseManager;
 import com.oneblocktoendall.quest.PlayerProgress;
 import com.oneblocktoendall.quest.Quest;
 import com.oneblocktoendall.quest.QuestManager;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FireworkExplosionComponent;
+import net.minecraft.component.type.FireworksComponent;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+
+import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -72,8 +82,8 @@ public class OneBlockCommand {
      * Places the one block at Y=200 and clears a large void pocket around it
      * so the mod works with ANY world type (normal, flat, custom, etc.).
      */
-    /** Distance between player islands in blocks. */
-    private static final int ISLAND_SPACING = 500;
+    /** Distance between player islands in blocks. 250 in honor of America's 250th. */
+    private static final int ISLAND_SPACING = 250;
 
     public static void initializeChallenge(ServerPlayerEntity player) {
         OneBlockWorldState state = OneBlockWorldState.get(player.server);
@@ -136,6 +146,61 @@ public class OneBlockCommand {
         player.sendMessage(Text.literal("Press J to open your Quest Book.")
                 .formatted(Formatting.GRAY));
         player.sendMessage(Text.empty());
+
+        // Patriotic red/white/blue firework celebration
+        launchPatrioticFireworks(world, blockPos);
+    }
+
+    /**
+     * Launch red, white, and blue fireworks around a position.
+     * Celebrates America's 250th — happy birthday!
+     */
+    private static void launchPatrioticFireworks(ServerWorld world, BlockPos center) {
+        Random rand = new Random();
+        int[][] colors = {
+                {DyeColor.RED.getFireworkColor()},
+                {DyeColor.WHITE.getFireworkColor()},
+                {DyeColor.BLUE.getFireworkColor()},
+                {DyeColor.RED.getFireworkColor(), DyeColor.WHITE.getFireworkColor()},
+                {DyeColor.WHITE.getFireworkColor(), DyeColor.BLUE.getFireworkColor()},
+                {DyeColor.RED.getFireworkColor(), DyeColor.BLUE.getFireworkColor()},
+        };
+
+        FireworkExplosionComponent.Type[] shapes = {
+                FireworkExplosionComponent.Type.LARGE_BALL,
+                FireworkExplosionComponent.Type.STAR,
+                FireworkExplosionComponent.Type.BURST,
+        };
+
+        for (int i = 0; i < 7; i++) {
+            double offsetX = (rand.nextDouble() - 0.5) * 8;
+            double offsetZ = (rand.nextDouble() - 0.5) * 8;
+
+            int[] colorSet = colors[i % colors.length];
+            IntList colorList = new IntArrayList();
+            for (int c : colorSet) colorList.add(c);
+            IntList fadeList = new IntArrayList();
+            fadeList.add(DyeColor.WHITE.getFireworkColor());
+
+            FireworkExplosionComponent explosion = new FireworkExplosionComponent(
+                    shapes[i % shapes.length],
+                    colorList,
+                    fadeList,
+                    true,  // trail
+                    true   // twinkle
+            );
+
+            ItemStack rocket = new ItemStack(Items.FIREWORK_ROCKET);
+            rocket.set(DataComponentTypes.FIREWORKS,
+                    new FireworksComponent(1 + rand.nextInt(2), List.of(explosion)));
+
+            FireworkRocketEntity entity = new FireworkRocketEntity(world,
+                    center.getX() + 0.5 + offsetX,
+                    center.getY() + 2.0,
+                    center.getZ() + 0.5 + offsetZ,
+                    rocket);
+            world.spawnEntity(entity);
+        }
     }
 
     /**
