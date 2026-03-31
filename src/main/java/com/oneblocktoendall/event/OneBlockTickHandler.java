@@ -13,6 +13,7 @@ import com.oneblocktoendall.phase.PhaseManager;
 import com.oneblocktoendall.quest.PlayerProgress;
 import com.oneblocktoendall.quest.Quest;
 import com.oneblocktoendall.quest.QuestManager;
+import com.oneblocktoendall.team.Team;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
@@ -29,10 +30,16 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Runs every server tick. Handles critical game loop jobs:
@@ -98,7 +105,12 @@ public class OneBlockTickHandler {
             }
         }
 
-        // --- Job 3: Check quest progress (every 20 ticks = 1 second) ---
+        // --- Job 3: Check bridge connections between islands (every 200 ticks = 10 seconds) ---
+        if (tickCounter % 200 == 0) {
+            checkBridgeConnections(server, state, overworld);
+        }
+
+        // --- Job 4: Check quest progress (every 20 ticks = 1 second) ---
         if (tickCounter % 20 != 0) return;
 
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
@@ -288,5 +300,169 @@ public class OneBlockTickHandler {
                 world.spawnEntity(entity);
             }
         }
+    }
+
+    /**
+     * Check all teams for a physical block bridge connecting two members' islands.
+     * Called every 200 ticks (~10 seconds). Only checks teams that haven't merged yet.
+     */
+    private static void checkBridgeConnections(MinecraftServer server, OneBlockWorldState state,
+                                                ServerWorld world) {
+        for (Team team : state.getAllTeams()) {
+            if (team.isMergedIslands()) continue;
+            if (team.getMembers().size() < 2) continue;
+
+            List<PlayerProgress> started = team.getMembers().stream()
+                    .map(state::getProgress)
+                    .filter(p -> p != null && p.isStarted() && p.getCurrentPhase() >= 1)
+                    .collect(Collectors.toList());
+
+            if (started.size() < 2) continue;
+
+            // Check each pair of members for a bridge
+            for (int i = 0; i < started.size(); i++) {
+                for (int j = i + 1; j < started.size(); j++) {
+                    PlayerProgress a = started.get(i);
+                    PlayerProgress b = started.get(j);
+                    if (hasBridgeConnection(world, a.getOneBlockPos(), b.getOneBlockPos())) {
+                        triggerIslandMerge(server, state, world, team, started);
+                        return; // Only merge one team per check cycle
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * BFS flood-fill from island A through solid blocks to see if island B is reachable.
+     * Limited to 6000 blocks to keep performance bounded.
+     */
+    private static boolean hasBridgeConnection(ServerWorld world, BlockPos posA, BlockPos posB) {
+        int yMin = Math.min(posA.getY(), posB.getY()) - 15;
+        int yMax = Math.max(posA.getY(), posB.getY()) + 40;
+        int targetRadiusSq = 10 * 10;
+        int maxVisited = 6000;
+
+        Set<Long> visited = new HashSet<>();
+        Queue<BlockPos> queue = new ArrayDeque<>();
+
+        // Seed BFS from non-air blocks near island A
+        for (int dx = -5; dx <= 5; dx++) {
+            for (int dy = -3; dy <= 5; dy++) {
+                for (int dz = -5; dz <= 5; dz++) {
+                    BlockPos seed = posA.add(dx, dy, dz);
+                    if (!world.getBlockState(seed).isAir() && visited.add(seed.asLong())) {
+                        queue.add(seed);
+                    }
+                }
+            }
+        }
+
+        while (!queue.isEmpty() && visited.size() < maxVisited) {
+            BlockPos current = queue.poll();
+
+            // Check if we've reached island B's vicinity
+            int ddx = current.getX() - posB.getX();
+            int ddy = current.getY() - posB.getY();
+            int ddz = current.getZ() - posB.getZ();
+            if (ddx * ddx + ddy * ddy + ddz * ddz <= targetRadiusSq) return true;
+
+            // Expand to 6 adjacent blocks
+            BlockPos[] neighbors = {
+                current.north(), current.south(), current.east(),
+                current.west(), current.up(), current.down()
+            };
+            for (BlockPos neighbor : neighbors) {
+                if (neighbor.getY() < yMin || neighbor.getY() > yMax) continue;
+                if (!visited.add(neighbor.asLong())) continue;
+                if (!world.getBlockState(neighbor).isAir()) {
+                    queue.add(neighbor);
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Called when a bridge is detected. Sets the team as merged, bumps all members
+     * to max(currentPhases) + 1, notifies everyone, and broadcasts server-wide.
+     */
+    private static void triggerIslandMerge(MinecraftServer server, OneBlockWorldState state,
+                                            ServerWorld world, Team team,
+                                            List<PlayerProgress> memberProgress) {
+        team.setMergedIslands(true);
+
+        // Everyone advances to the highest current phase + 1 (capped at max)
+        int maxPhase = PhaseManager.getMaxPhase();
+        int targetPhase = memberProgress.stream()
+                .mapToInt(PlayerProgress::getCurrentPhase)
+                .max().orElse(1);
+        targetPhase = Math.min(targetPhase + 1, maxPhase);
+
+        Phase newPhaseObj = PhaseManager.getPhase(targetPhase);
+        String phaseName = newPhaseObj != null ? newPhaseObj.name() : "Phase " + targetPhase;
+
+        List<String> newBlocks = PhaseManager.getNewItemsForPhase(targetPhase);
+        List<String> newMobs = PhaseManager.getNewMobsForPhase(targetPhase);
+        List<QuestSyncPayload.QuestStatus> questStatuses = new ArrayList<>();
+        if (newPhaseObj != null) {
+            for (Quest quest : newPhaseObj.quests()) {
+                questStatuses.add(new QuestSyncPayload.QuestStatus(
+                        quest.id(), quest.name(), quest.description(), 0, quest.count(), false));
+            }
+        }
+
+        final int finalTargetPhase = targetPhase;
+        for (PlayerProgress progress : memberProgress) {
+            progress.setCurrentPhase(finalTargetPhase); // resets phaseCompleteNotified
+
+            // Update the one block visual
+            BlockPos pos = progress.getOneBlockPos();
+            if (world.getBlockState(pos).getBlock() instanceof OneBlock) {
+                world.setBlockState(pos, ModBlocks.ONE_BLOCK.getDefaultState()
+                        .with(OneBlock.PHASE, Math.min(finalTargetPhase, 25)));
+            }
+
+            // Notify the player if they're online
+            ServerPlayerEntity player = server.getPlayerManager().getPlayer(progress.getPlayerId());
+            if (player != null) {
+                player.sendMessage(Text.empty());
+                player.sendMessage(Text.literal("\u2605 ISLANDS MERGED! \u2605")
+                        .formatted(Formatting.GOLD, Formatting.BOLD));
+                player.sendMessage(Text.literal("Your bridge connected the islands!")
+                        .formatted(Formatting.GREEN));
+                player.sendMessage(Text.literal("Advanced to Phase " + finalTargetPhase + ": " + phaseName)
+                        .formatted(Formatting.AQUA, Formatting.BOLD));
+                player.sendMessage(Text.literal("Use /oneblock visit <player> to teleport to your ally's island.")
+                        .formatted(Formatting.YELLOW));
+                player.sendMessage(Text.empty());
+
+                world.playSound(null, player.getBlockPos(),
+                        SoundEvents.UI_TOAST_CHALLENGE_COMPLETE,
+                        SoundCategory.PLAYERS, 1.0f, 0.8f);
+                world.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING,
+                        player.getX(), player.getY() + 1.0, player.getZ(),
+                        80, 1.0, 1.5, 1.0, 0.3);
+
+                ModNetworking.sendToast(player, new ToastPayload(
+                        ToastPayload.TYPE_PHASE, player.getName().getString(),
+                        "Islands Merged!", "", finalTargetPhase));
+
+                ServerPlayNetworking.send(player, new PhaseAdvancePayload(
+                        finalTargetPhase, "\u2605 Islands Merged! " + phaseName,
+                        newBlocks, newMobs, questStatuses));
+
+                ModNetworking.syncQuestProgress(player, progress);
+            }
+        }
+
+        state.markDirty();
+
+        // Server-wide announcement
+        server.getPlayerManager().broadcast(
+                Text.literal("\u2605 " + team.getTeamName() + "'s islands are now connected! They advanced to Phase "
+                        + finalTargetPhase + "! \u2605")
+                        .formatted(Formatting.GOLD),
+                false);
     }
 }
