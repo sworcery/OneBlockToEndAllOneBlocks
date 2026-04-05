@@ -2,10 +2,6 @@
 
 # One Block to End All One Blocks
 
-<p align="center">
-  <img src="icon.png" alt="Mod Icon" width="128"/>
-</p>
-
 A Minecraft Fabric mod for **1.21.4** that turns a single block into a full survival challenge — complete with quests, phases, multiplayer support, and team island merging.
 
 ## Requirements
