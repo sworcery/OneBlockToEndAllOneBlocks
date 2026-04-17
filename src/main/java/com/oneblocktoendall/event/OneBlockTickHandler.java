@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  */
 public class OneBlockTickHandler {
 
-    private static int tickCounter = 0;
+    private static long tickCounter = 0;
     private static final Random RANDOM = new Random();
 
     /** How far below the one block a player can fall before being teleported back. */
@@ -69,17 +69,16 @@ public class OneBlockTickHandler {
 
         OneBlockWorldState state = OneBlockWorldState.get(server);
 
-        // --- Job 1: Regenerate broken one blocks (safety net backup) ---
-        for (Map.Entry<UUID, PlayerProgress> entry : state.getAllProgress().entrySet()) {
-            PlayerProgress progress = entry.getValue();
-            if (!progress.isStarted() || progress.getCurrentPhase() < 1) continue;
+        // --- Job 1: Regenerate broken one blocks (online players only — no point loading chunks for offline players) ---
+        for (ServerPlayerEntity onlinePlayer : server.getPlayerManager().getPlayerList()) {
+            PlayerProgress progress = state.getProgress(onlinePlayer.getUuid());
+            if (progress == null || !progress.isStarted() || progress.getCurrentPhase() < 1) continue;
 
             BlockPos pos = progress.getOneBlockPos();
-
-            if (!(overworld.getBlockState(pos).getBlock() instanceof OneBlock)) {
-                int phase = progress.getCurrentPhase();
+            if (overworld.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4)
+                    && !(overworld.getBlockState(pos).getBlock() instanceof OneBlock)) {
                 overworld.setBlockState(pos, ModBlocks.ONE_BLOCK.getDefaultState()
-                        .with(OneBlock.PHASE, Math.min(phase, 25)));
+                        .with(OneBlock.PHASE, Math.min(progress.getCurrentPhase(), 25)));
             }
         }
 
@@ -144,11 +143,10 @@ public class OneBlockTickHandler {
                         });
             }
 
-            // Check if all quests in current phase are done
-            if (!newlyCompleted.isEmpty() && QuestManager.isPhaseComplete(progress)) {
-                if (!progress.isPhaseCompleteNotified()) {
-                    advancePhase(player, progress, state);
-                }
+            // Check if all quests in current phase are done — checked unconditionally so players
+            // who log out on a completed phase still advance when they log back in.
+            if (QuestManager.isPhaseComplete(progress) && !progress.isPhaseCompleteNotified()) {
+                advancePhase(player, progress, state);
             }
 
             // Sync progress to client for HUD display
@@ -335,21 +333,23 @@ public class OneBlockTickHandler {
 
     /**
      * BFS flood-fill from island A through solid blocks to see if island B is reachable.
-     * Limited to 6000 blocks to keep performance bounded.
+     *
+     * Limits: 25000 blocks visited (generous for a 250-block bridge with platform builds),
+     * seed radius 8 around island A, target detection radius 12 around island B.
      */
     private static boolean hasBridgeConnection(ServerWorld world, BlockPos posA, BlockPos posB) {
-        int yMin = Math.min(posA.getY(), posB.getY()) - 15;
-        int yMax = Math.max(posA.getY(), posB.getY()) + 40;
-        int targetRadiusSq = 10 * 10;
-        int maxVisited = 6000;
+        int yMin = Math.min(posA.getY(), posB.getY()) - 20;
+        int yMax = Math.max(posA.getY(), posB.getY()) + 50;
+        int targetRadiusSq = 12 * 12;
+        int maxVisited = 25000;
 
         Set<Long> visited = new HashSet<>();
         Queue<BlockPos> queue = new ArrayDeque<>();
 
-        // Seed BFS from non-air blocks near island A
-        for (int dx = -5; dx <= 5; dx++) {
-            for (int dy = -3; dy <= 5; dy++) {
-                for (int dz = -5; dz <= 5; dz++) {
+        // Seed BFS from non-air blocks within radius 8 of island A
+        for (int dx = -8; dx <= 8; dx++) {
+            for (int dy = -4; dy <= 8; dy++) {
+                for (int dz = -8; dz <= 8; dz++) {
                     BlockPos seed = posA.add(dx, dy, dz);
                     if (!world.getBlockState(seed).isAir() && visited.add(seed.asLong())) {
                         queue.add(seed);
@@ -367,7 +367,7 @@ public class OneBlockTickHandler {
             int ddz = current.getZ() - posB.getZ();
             if (ddx * ddx + ddy * ddy + ddz * ddz <= targetRadiusSq) return true;
 
-            // Expand to 6 adjacent blocks
+            // Expand to 6 adjacent non-air blocks
             BlockPos[] neighbors = {
                 current.north(), current.south(), current.east(),
                 current.west(), current.up(), current.down()

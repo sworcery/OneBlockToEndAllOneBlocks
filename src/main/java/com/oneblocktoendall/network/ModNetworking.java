@@ -275,30 +275,39 @@ public class ModNetworking {
                         .formatted(Formatting.GOLD));
             }
             case AdminActionPayload.SET_PHASE -> {
-                ServerPlayerEntity target = admin.server.getPlayerManager().getPlayer(payload.targetPlayer());
-                if (target != null) {
-                    PlayerProgress tp = state.getProgress(target.getUuid());
-                    if (tp != null && tp.isStarted()) {
-                        int newPhase = Math.max(1, Math.min(payload.value(), PhaseManager.getMaxPhase()));
-                        tp.setCurrentPhase(newPhase);
-                        state.markDirty();
-                        admin.sendMessage(Text.literal("Set " + payload.targetPlayer() + " to phase " + newPhase)
-                                .formatted(Formatting.GREEN));
-                    }
+                PlayerProgress tp = resolveProgressByName(admin.server, state, payload.targetPlayer());
+                if (tp != null && tp.isStarted()) {
+                    int newPhase = Math.max(1, Math.min(payload.value(), PhaseManager.getMaxPhase()));
+                    tp.setCurrentPhase(newPhase);
+                    state.markDirty();
+                    // Notify online target
+                    ServerPlayerEntity onlineTarget = admin.server.getPlayerManager().getPlayer(payload.targetPlayer());
+                    if (onlineTarget != null) ModNetworking.syncQuestProgress(onlineTarget, tp);
+                    admin.sendMessage(Text.literal("Set " + payload.targetPlayer() + " to phase " + newPhase)
+                            .formatted(Formatting.GREEN));
+                } else {
+                    admin.sendMessage(Text.literal("Player not found or hasn't started.").formatted(Formatting.RED));
                 }
             }
             case AdminActionPayload.RESET_PLAYER -> {
-                ServerPlayerEntity target = admin.server.getPlayerManager().getPlayer(payload.targetPlayer());
-                if (target != null) {
-                    PlayerProgress tp = state.getProgress(target.getUuid());
-                    if (tp != null) {
-                        BlockPos blockPos = tp.getOneBlockPos();
-                        tp.resetAll();
-                        state.markDirty();
-                        OneBlockCommand.initializeChallenge(target);
-                        admin.sendMessage(Text.literal("Reset " + payload.targetPlayer())
-                                .formatted(Formatting.GREEN));
+                PlayerProgress tp = resolveProgressByName(admin.server, state, payload.targetPlayer());
+                if (tp != null) {
+                    BlockPos savedPos = tp.getOneBlockPos();
+                    tp.resetAll();
+                    // Reuse existing island slot instead of allocating a new one
+                    tp.setStarted(true);
+                    tp.setCurrentPhase(1);
+                    tp.setOneBlockPos(savedPos);
+                    state.markDirty();
+                    // If online, sync immediately
+                    ServerPlayerEntity onlineTarget = admin.server.getPlayerManager().getPlayer(payload.targetPlayer());
+                    if (onlineTarget != null) {
+                        OneBlockCommand.initializeChallenge(onlineTarget);
+                        ModNetworking.syncQuestProgress(onlineTarget, tp);
                     }
+                    admin.sendMessage(Text.literal("Reset " + payload.targetPlayer()).formatted(Formatting.GREEN));
+                } else {
+                    admin.sendMessage(Text.literal("Player not found.").formatted(Formatting.RED));
                 }
             }
         }
@@ -358,6 +367,20 @@ public class ModNetworking {
                     true, team.getTeamName(), resolveName(player.server, team.getLeaderId()),
                     members, invites, team.isMergedIslands(), message));
         }
+    }
+
+    /** Find PlayerProgress by display name, works for both online and offline players. */
+    private static PlayerProgress resolveProgressByName(MinecraftServer server,
+                                                         OneBlockWorldState state, String name) {
+        // Check online first (fast path)
+        ServerPlayerEntity online = server.getPlayerManager().getPlayer(name);
+        if (online != null) return state.getProgress(online.getUuid());
+        // Fall back: scan all progress entries and resolve names
+        for (Map.Entry<UUID, PlayerProgress> entry : state.getAllProgress().entrySet()) {
+            String resolved = resolveName(server, entry.getKey());
+            if (resolved.equalsIgnoreCase(name)) return entry.getValue();
+        }
+        return null;
     }
 
     private static String resolveName(MinecraftServer server, UUID playerId) {

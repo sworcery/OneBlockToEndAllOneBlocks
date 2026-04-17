@@ -1,6 +1,8 @@
 package com.oneblocktoendall.quest;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
@@ -108,7 +110,9 @@ public class PlayerProgress {
         }
         nbt.put("baselines", baselinesNbt);
 
-        nbt.putString("completedQuests", String.join(",", completedQuests));
+        NbtList completedList = new NbtList();
+        for (String id : completedQuests) completedList.add(NbtString.of(id));
+        nbt.put("completedQuests", completedList);
 
         return nbt;
     }
@@ -136,9 +140,17 @@ public class PlayerProgress {
             progress.questBaselines.put(key, baselinesNbt.getInt(key));
         }
 
-        String completed = nbt.getString("completedQuests");
-        if (!completed.isEmpty()) {
-            progress.completedQuests.addAll(Arrays.asList(completed.split(",")));
+        // Support both legacy comma-string format and current NbtList format
+        if (nbt.contains("completedQuests", 9)) { // 9 = NbtList
+            NbtList completedList = nbt.getList("completedQuests", 8); // 8 = NbtString
+            for (int i = 0; i < completedList.size(); i++) {
+                progress.completedQuests.add(completedList.getString(i));
+            }
+        } else {
+            String completed = nbt.getString("completedQuests");
+            if (!completed.isEmpty()) {
+                progress.completedQuests.addAll(Arrays.asList(completed.split(",")));
+            }
         }
 
         return progress;

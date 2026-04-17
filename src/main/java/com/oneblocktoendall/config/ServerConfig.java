@@ -3,6 +3,7 @@ package com.oneblocktoendall.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.oneblocktoendall.OneBlockMod;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,7 +13,10 @@ public class ServerConfig {
 
     private static ServerConfig INSTANCE;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final String FILE_NAME = "config/oneblocktoendall-server.json";
+
+    private static Path getConfigPath() {
+        return FabricLoader.getInstance().getConfigDir().resolve("oneblocktoendall-server.json");
+    }
 
     public boolean autoStart = false;
 
@@ -22,7 +26,7 @@ public class ServerConfig {
     }
 
     public static void load() {
-        Path path = Path.of(FILE_NAME);
+        Path path = getConfigPath();
         if (Files.exists(path)) {
             try {
                 String json = Files.readString(path);
@@ -40,7 +44,7 @@ public class ServerConfig {
 
     public static void save() {
         try {
-            Path path = Path.of(FILE_NAME);
+            Path path = getConfigPath();
             Files.createDirectories(path.getParent());
             Files.writeString(path, GSON.toJson(get()));
         } catch (IOException e) {
