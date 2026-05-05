@@ -317,13 +317,14 @@ public class OneBlockTickHandler {
             if (started.size() < 2) continue;
 
             // Check each pair of members for a bridge
-            for (int i = 0; i < started.size(); i++) {
-                for (int j = i + 1; j < started.size(); j++) {
+            boolean merged = false;
+            for (int i = 0; i < started.size() && !merged; i++) {
+                for (int j = i + 1; j < started.size() && !merged; j++) {
                     PlayerProgress a = started.get(i);
                     PlayerProgress b = started.get(j);
                     if (hasBridgeConnection(world, a.getOneBlockPos(), b.getOneBlockPos())) {
                         triggerIslandMerge(server, state, world, team, started);
-                        return; // Only merge one team per check cycle
+                        merged = true;
                     }
                 }
             }
@@ -343,22 +344,23 @@ public class OneBlockTickHandler {
         int maxVisited = 25000;
 
         Set<Long> visited = new HashSet<>();
-        Queue<BlockPos> queue = new ArrayDeque<>();
+        Queue<Long> queue = new ArrayDeque<>();
 
         // Seed BFS from non-air blocks within radius 8 of island A
         for (int dx = -8; dx <= 8; dx++) {
             for (int dy = -4; dy <= 8; dy++) {
                 for (int dz = -8; dz <= 8; dz++) {
                     BlockPos seed = posA.add(dx, dy, dz);
-                    if (!world.getBlockState(seed).isAir() && visited.add(seed.asLong())) {
-                        queue.add(seed);
+                    long packed = seed.asLong();
+                    if (!world.getBlockState(seed).isAir() && visited.add(packed)) {
+                        queue.add(packed);
                     }
                 }
             }
         }
 
         while (!queue.isEmpty() && visited.size() < maxVisited) {
-            BlockPos current = queue.poll();
+            BlockPos current = BlockPos.fromLong(queue.poll());
 
             // Check if we've reached island B's vicinity
             int ddx = current.getX() - posB.getX();
@@ -373,9 +375,10 @@ public class OneBlockTickHandler {
             };
             for (BlockPos neighbor : neighbors) {
                 if (neighbor.getY() < yMin || neighbor.getY() > yMax) continue;
-                if (!visited.add(neighbor.asLong())) continue;
+                long packed = neighbor.asLong();
+                if (!visited.add(packed)) continue;
                 if (!world.getBlockState(neighbor).isAir()) {
-                    queue.add(neighbor);
+                    queue.add(packed);
                 }
             }
         }

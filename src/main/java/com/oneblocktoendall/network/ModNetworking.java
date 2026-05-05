@@ -405,10 +405,6 @@ public class ModNetworking {
     }
 
     private static String resolveName(MinecraftServer server, UUID playerId) {
-        ServerPlayerEntity online = server.getPlayerManager().getPlayer(playerId);
-        if (online != null) return online.getName().getString();
-        return server.getUserCache().getByUuid(playerId)
-                .map(profile -> profile.getName())
-                .orElse(playerId.toString().substring(0, 8));
+        return com.oneblocktoendall.util.PlayerNames.resolve(server, playerId);
     }
 }

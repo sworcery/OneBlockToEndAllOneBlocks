@@ -174,8 +174,7 @@ public class PhaseManager {
         try (InputStream is = PhaseManager.class.getResourceAsStream(
                 "/data/oneblocktoendall/phases.json")) {
             if (is == null) {
-                OneBlockMod.LOGGER.error("Could not find phases.json!");
-                return;
+                throw new RuntimeException("Could not find phases.json!");
             }
 
             JsonObject root = JsonParser.parseReader(
@@ -225,7 +224,7 @@ public class PhaseManager {
                         mobSpawnChance, quests));
             }
         } catch (Exception e) {
-            OneBlockMod.LOGGER.error("Failed to load phases.json", e);
+            throw new RuntimeException("Failed to load phases.json", e);
         }
     }
 }

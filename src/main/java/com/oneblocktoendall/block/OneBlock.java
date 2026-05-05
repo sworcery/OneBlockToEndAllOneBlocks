@@ -131,17 +131,9 @@ public class OneBlock extends Block {
                 }
             }
 
-            // INSTANT REGENERATION — place the block back immediately
-            int currentPhase = phase;
-            if (player instanceof ServerPlayerEntity serverPlayer) {
-                OneBlockWorldState worldState = OneBlockWorldState.get(serverPlayer.server);
-                PlayerProgress progress = worldState.getProgress(serverPlayer.getUuid());
-                if (progress != null && progress.isStarted()) {
-                    currentPhase = progress.getCurrentPhase();
-                }
-            }
+            // INSTANT REGENERATION — place the block back at the player's current phase
             world.setBlockState(pos, ModBlocks.ONE_BLOCK.getDefaultState()
-                    .with(PHASE, Math.min(currentPhase, 25)));
+                    .with(PHASE, Math.min(phase, 25)));
         }
     }
 

@@ -66,11 +66,7 @@ public class OneBlockWorldState extends PersistentState {
     }
 
     private String resolveName(MinecraftServer server, UUID playerId) {
-        var player = server.getPlayerManager().getPlayer(playerId);
-        if (player != null) return player.getName().getString();
-        return server.getUserCache().getByUuid(playerId)
-                .map(profile -> profile.getName())
-                .orElse(playerId.toString().substring(0, 8));
+        return com.oneblocktoendall.util.PlayerNames.resolve(server, playerId);
     }
 
     public static OneBlockWorldState get(MinecraftServer server) {

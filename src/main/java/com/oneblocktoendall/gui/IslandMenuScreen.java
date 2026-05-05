@@ -15,10 +15,18 @@ public class IslandMenuScreen extends Screen {
     private static final int PANEL_WIDTH = 300;
     private static final int PANEL_HEIGHT = 260;
     private final IslandListPayload data;
+    private boolean myVisitorState;
 
     public IslandMenuScreen(IslandListPayload data) {
         super(Text.literal("Islands"));
         this.data = data;
+        MinecraftClient mc = MinecraftClient.getInstance();
+        String myName = mc.getSession().getUsername();
+        this.myVisitorState = data.islands().stream()
+                .filter(i -> i.playerName().equals(myName))
+                .findFirst()
+                .map(IslandListPayload.IslandInfo::allowsVisitors)
+                .orElse(true);
     }
 
     @Override
@@ -46,11 +54,11 @@ public class IslandMenuScreen extends Screen {
             } else {
                 // Visitor toggle for own island
                 addDrawableChild(ButtonWidget.builder(
-                        Text.literal(island.allowsVisitors() ? "Open" : "Closed"),
+                        Text.literal(myVisitorState ? "Open" : "Closed"),
                         button -> {
-                            boolean newVal = !island.allowsVisitors();
-                            ClientPlayNetworking.send(new VisitorTogglePayload(newVal));
-                            button.setMessage(Text.literal(newVal ? "Open" : "Closed"));
+                            myVisitorState = !myVisitorState;
+                            ClientPlayNetworking.send(new VisitorTogglePayload(myVisitorState));
+                            button.setMessage(Text.literal(myVisitorState ? "Open" : "Closed"));
                         }
                 ).dimensions(panelX + PANEL_WIDTH - 60, y - 2, 45, 16).build());
             }

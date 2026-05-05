@@ -45,14 +45,14 @@ public class QuestBookScreen extends Screen {
 
         int centerX = this.width / 2;
         int topY = (this.height - PANEL_HEIGHT) / 2 - 25;
-        int maxPhase = data.currentPhase();
-        int totalPages = (maxPhase + TABS_PER_PAGE - 1) / TABS_PER_PAGE;
+        int unlockedPhases = data.currentPhase();
+        int totalPages = (unlockedPhases + TABS_PER_PAGE - 1) / TABS_PER_PAGE;
 
         // Clamp tabPage to valid range
         tabPage = Math.max(0, Math.min(tabPage, totalPages - 1));
 
         int startPhase = tabPage * TABS_PER_PAGE + 1;
-        int endPhase = Math.min(startPhase + TABS_PER_PAGE - 1, maxPhase);
+        int endPhase = Math.min(startPhase + TABS_PER_PAGE - 1, unlockedPhases);
 
         // Calculate how many tabs + arrows we need to center
         int tabCount = endPhase - startPhase + 1;
@@ -163,7 +163,7 @@ public class QuestBookScreen extends Screen {
         if (isCurrentPhase) {
             phaseTitle = "Phase " + data.currentPhase() + ": " + data.phaseName();
         } else {
-            phaseTitle = "Phase " + selectedPhase + " (Completed)";
+            phaseTitle = "Phase " + selectedPhase + " (Previous)";
         }
 
         context.drawCenteredTextWithShadow(textRenderer, phaseTitle,

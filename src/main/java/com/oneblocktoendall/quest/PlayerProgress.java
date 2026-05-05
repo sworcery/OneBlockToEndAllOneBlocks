@@ -53,6 +53,7 @@ public class PlayerProgress {
     public void setCurrentPhase(int phase) {
         this.currentPhase = phase;
         this.phaseCompleteNotified = false;
+        this.questBaselines.clear();
     }
 
     public int incrementBlocksBroken() {
