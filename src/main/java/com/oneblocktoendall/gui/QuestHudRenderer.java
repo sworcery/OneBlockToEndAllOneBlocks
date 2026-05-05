@@ -33,7 +33,8 @@ public class QuestHudRenderer {
 
     private static void render(DrawContext context, RenderTickCounter tickCounter) {
         if (cachedData == null) return;
-        if (!ModConfig.get().hudEnabled) return;
+        ModConfig config = ModConfig.get();
+        if (!config.hudEnabled) return;
 
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.getDebugHud().shouldShowDebugHud()) return;
@@ -43,7 +44,7 @@ public class QuestHudRenderer {
         int screenWidth = client.getWindow().getScaledWidth();
         int screenHeight = client.getWindow().getScaledHeight();
 
-        float scale = ModConfig.get().hudScale;
+        float scale = config.hudScale;
         int panelWidth = 160;
 
         // Estimate panel height for position calculation
@@ -52,8 +53,8 @@ public class QuestHudRenderer {
         int estimatedHeight = 20 + (questCount * (12 + 6 + 4)) + 5;
         if (questCount == 0) estimatedHeight = 35;
 
-        int x = ModConfig.get().hudPosition.getX((int)(screenWidth / scale), panelWidth);
-        int y = ModConfig.get().hudPosition.getY((int)(screenHeight / scale), estimatedHeight);
+        int x = config.hudPosition.getX((int)(screenWidth / scale), panelWidth);
+        int y = config.hudPosition.getY((int)(screenHeight / scale), estimatedHeight);
 
         if (scale != 1.0f) {
             context.getMatrices().push();

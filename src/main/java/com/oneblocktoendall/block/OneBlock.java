@@ -22,7 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * The One Block — the central block of the entire mod.
@@ -41,8 +41,6 @@ public class OneBlock extends Block {
 
     /** Block state property controlling appearance. 1 = Survival, 25 = Ascension. */
     public static final IntProperty PHASE = IntProperty.of("phase", 1, 25);
-
-    private static final Random RANDOM = new Random();
 
     /** Lucky drop chance (2%) */
     private static final double LUCKY_DROP_CHANCE = 0.02;
@@ -92,7 +90,7 @@ public class OneBlock extends Block {
             PhaseManager.trySpawnMob(serverWorld, pos, phase);
 
             // Lucky drop check (2% chance for a bonus item from the NEXT phase)
-            if (RANDOM.nextDouble() < LUCKY_DROP_CHANCE && phase < PhaseManager.getMaxPhase()) {
+            if (ThreadLocalRandom.current().nextDouble() < LUCKY_DROP_CHANCE && phase < PhaseManager.getMaxPhase()) {
                 PhaseManager.dropRandomItem(serverWorld, pos, phase + 1);
                 // Golden sparkle particles + ding sound
                 serverWorld.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING,

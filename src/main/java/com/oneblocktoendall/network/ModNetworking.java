@@ -24,6 +24,17 @@ import java.util.*;
 
 public class ModNetworking {
 
+    private static final Map<UUID, Long> lastRequestTime = new HashMap<>();
+    private static final long REQUEST_COOLDOWN_MS = 500;
+
+    private static boolean isRateLimited(ServerPlayerEntity player) {
+        long now = System.currentTimeMillis();
+        Long last = lastRequestTime.get(player.getUuid());
+        if (last != null && now - last < REQUEST_COOLDOWN_MS) return true;
+        lastRequestTime.put(player.getUuid(), now);
+        return false;
+    }
+
     public static void registerS2CPackets() {
         PayloadTypeRegistry.playS2C().register(QuestSyncPayload.ID, QuestSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ToastPayload.ID, ToastPayload.CODEC);
@@ -70,6 +81,7 @@ public class ModNetworking {
         ServerPlayNetworking.registerGlobalReceiver(BlockPoolRequestPayload.ID, (payload, context) -> {
             ServerPlayerEntity player = context.player();
             context.server().execute(() -> {
+                if (isRateLimited(player)) return;
                 OneBlockWorldState state = OneBlockWorldState.get(player.server);
                 PlayerProgress progress = state.getProgress(player.getUuid());
                 if (progress == null) return;
@@ -81,17 +93,26 @@ public class ModNetworking {
 
         ServerPlayNetworking.registerGlobalReceiver(StatsRequestPayload.ID, (payload, context) -> {
             ServerPlayerEntity player = context.player();
-            context.server().execute(() -> sendStatsData(player));
+            context.server().execute(() -> {
+                if (isRateLimited(player)) return;
+                sendStatsData(player);
+            });
         });
 
         ServerPlayNetworking.registerGlobalReceiver(LeaderboardRequestPayload.ID, (payload, context) -> {
             ServerPlayerEntity player = context.player();
-            context.server().execute(() -> sendLeaderboard(player));
+            context.server().execute(() -> {
+                if (isRateLimited(player)) return;
+                sendLeaderboard(player);
+            });
         });
 
         ServerPlayNetworking.registerGlobalReceiver(IslandListRequestPayload.ID, (payload, context) -> {
             ServerPlayerEntity player = context.player();
-            context.server().execute(() -> sendIslandList(player));
+            context.server().execute(() -> {
+                if (isRateLimited(player)) return;
+                sendIslandList(player);
+            });
         });
 
         ServerPlayNetworking.registerGlobalReceiver(TeleportRequestPayload.ID, (payload, context) -> {

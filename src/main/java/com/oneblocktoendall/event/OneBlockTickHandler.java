@@ -36,7 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -52,7 +52,6 @@ import java.util.stream.Collectors;
 public class OneBlockTickHandler {
 
     private static long tickCounter = 0;
-    private static final Random RANDOM = new Random();
 
     /** How far below the one block a player can fall before being teleported back. */
     private static final int FALL_SAFETY_DISTANCE = 100;
@@ -284,17 +283,17 @@ public class OneBlockTickHandler {
         }
 
         for (int i = 0; i < count; i++) {
-            EntityType<?> type = waveTypes[RANDOM.nextInt(waveTypes.length)];
+            EntityType<?> type = waveTypes[ThreadLocalRandom.current().nextInt(waveTypes.length)];
             Entity entity = type.create(world, SpawnReason.EVENT);
             if (entity != null) {
                 // Spawn around the block in a small radius
-                double offsetX = (RANDOM.nextDouble() - 0.5) * 4;
-                double offsetZ = (RANDOM.nextDouble() - 0.5) * 4;
+                double offsetX = (ThreadLocalRandom.current().nextDouble() - 0.5) * 4;
+                double offsetZ = (ThreadLocalRandom.current().nextDouble() - 0.5) * 4;
                 entity.refreshPositionAndAngles(
                         blockPos.getX() + 0.5 + offsetX,
                         blockPos.getY() + 1.0,
                         blockPos.getZ() + 0.5 + offsetZ,
-                        RANDOM.nextFloat() * 360f, 0f);
+                        ThreadLocalRandom.current().nextFloat() * 360f, 0f);
                 world.spawnEntity(entity);
             }
         }

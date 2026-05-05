@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Loads phase definitions from JSON and provides methods for:
@@ -29,7 +30,6 @@ import java.util.*;
 public class PhaseManager {
 
     private static final Map<Integer, Phase> PHASES = new LinkedHashMap<>();
-    private static final Random RANDOM = new Random();
 
     public static void init() {
         loadPhases();
@@ -66,7 +66,8 @@ public class PhaseManager {
 
         // Weighted random selection
         int totalWeight = cumulativePool.stream().mapToInt(BlockPoolEntry::weight).sum();
-        int roll = RANDOM.nextInt(totalWeight);
+        if (totalWeight <= 0) return;
+        int roll = ThreadLocalRandom.current().nextInt(totalWeight);
         int running = 0;
 
         for (BlockPoolEntry entry : cumulativePool) {
@@ -98,11 +99,12 @@ public class PhaseManager {
             }
         }
 
-        if (cumulativeMobs.isEmpty() || RANDOM.nextDouble() >= highestChance) return;
+        if (cumulativeMobs.isEmpty() || ThreadLocalRandom.current().nextDouble() >= highestChance) return;
 
         // Weighted random mob selection
         int totalWeight = cumulativeMobs.stream().mapToInt(MobSpawnEntry::weight).sum();
-        int roll = RANDOM.nextInt(totalWeight);
+        if (totalWeight <= 0) return;
+        int roll = ThreadLocalRandom.current().nextInt(totalWeight);
         int running = 0;
 
         for (MobSpawnEntry entry : cumulativeMobs) {
@@ -114,7 +116,7 @@ public class PhaseManager {
                     if (entity != null) {
                         entity.refreshPositionAndAngles(
                                 pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
-                                RANDOM.nextFloat() * 360f, 0f);
+                                ThreadLocalRandom.current().nextFloat() * 360f, 0f);
                         world.spawnEntity(entity);
                     }
                 });

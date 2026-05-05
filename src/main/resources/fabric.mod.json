@@ -4,8 +4,10 @@
     "version": "${version}",
     "name": "One Block to Rule Them All",
     "description": "The ultimate one block challenge with quest-based progression and multiplayer island merging",
-    "authors": ["John"],
-    "contact": {},
+    "authors": ["sworcery"],
+    "contact": {
+        "sources": "https://github.com/sworcery/OneBlockToEndAllOneBlocks"
+    },
     "license": "MIT",
     "environment": "*",
     "entrypoints": {

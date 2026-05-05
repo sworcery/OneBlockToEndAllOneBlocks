@@ -26,7 +26,7 @@ A Minecraft Fabric mod for **1.21.4** that turns a single block into a full surv
 ## Gameplay
 
 ### Phases
-There are **6 phases**, each with its own block pool, mob pool, and 4 quests. Completing all 4 quests in a phase automatically advances you to the next, with a celebration screen showing what's newly unlocked.
+There are **25 phases**, each with its own block pool, mob pool, and 4 quests. Completing all 4 quests in a phase automatically advances you to the next, with a celebration screen showing what's newly unlocked.
 
 Every 5th phase transition triggers a **Boss Wave** — a hostile mob spawns near your island to defend against.
 

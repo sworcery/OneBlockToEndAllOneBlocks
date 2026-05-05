@@ -32,8 +32,8 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * The /oneblock command — the player's interface for managing their challenge.
@@ -156,7 +156,7 @@ public class OneBlockCommand {
      * Celebrates America's 250th — happy birthday!
      */
     private static void launchPatrioticFireworks(ServerWorld world, BlockPos center) {
-        Random rand = new Random();
+        ThreadLocalRandom rand = ThreadLocalRandom.current();
         int[][] colors = {
                 {DyeColor.RED.getFireworkColor()},
                 {DyeColor.WHITE.getFireworkColor()},
@@ -315,9 +315,9 @@ public class OneBlockCommand {
         progress.resetAll();
         state.markDirty();
 
-        // Clear the area at the existing island position
+        // Clear the area at the existing island position (wide radius to remove player builds)
         ServerWorld world = player.getServerWorld();
-        clearArea(world, savedPos, 10, 10, 20);
+        clearArea(world, savedPos, 60, 30, 60);
 
         // Re-initialize at the same position (not a new slot)
         progress.setStarted(true);
