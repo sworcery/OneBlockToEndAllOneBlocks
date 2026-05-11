@@ -28,12 +28,13 @@ public class QuestHudRenderer {
 
     private static void render(DrawContext context, RenderTickCounter tickCounter) {
         if (cachedData == null) return;
-        ModConfig config = ModConfig.get();
-        if (!config.hudEnabled) return;
 
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.getDebugHud().shouldShowDebugHud()) return;
         if (client.currentScreen != null) return;
+
+        ModConfig config = ModConfig.get();
+        if (!config.hudEnabled) return;
 
         TextRenderer textRenderer = client.textRenderer;
         int screenWidth = client.getWindow().getScaledWidth();

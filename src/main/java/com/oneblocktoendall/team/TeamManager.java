@@ -17,7 +17,7 @@ public class TeamManager {
         if (progress == null || !progress.isStarted()) return "You haven't started the challenge!";
         if (progress.getTeamId() != null) return "You're already in a team!";
         if (teamName == null || teamName.isBlank()) return "Team name cannot be empty!";
-        if (teamName.length() > 20) teamName = teamName.substring(0, 20);
+        if (teamName.length() > 20) return "Team name must be 20 characters or fewer!";
 
         UUID teamId = UUID.randomUUID();
         Team team = new Team(teamId, teamName, player.getUuid());

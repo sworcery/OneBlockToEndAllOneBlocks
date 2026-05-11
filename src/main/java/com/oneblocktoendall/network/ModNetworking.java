@@ -316,7 +316,7 @@ public class ModNetworking {
             String name = resolveName(admin.server, entry.getKey());
             boolean online = admin.server.getPlayerManager().getPlayer(entry.getKey()) != null;
             players.add(new AdminDataPayload.PlayerInfo(
-                    name, p.getCurrentPhase(), p.getTotalQuestsCompleted(),
+                    entry.getKey(), name, p.getCurrentPhase(), p.getTotalQuestsCompleted(),
                     p.getTotalBlocksBroken(), online, p.isSpectating()));
         }
 
@@ -334,43 +334,57 @@ public class ModNetworking {
                 ServerConfig.save();
                 admin.sendMessage(Text.literal("Auto-start: " + (config.autoStart ? "ON" : "OFF"))
                         .formatted(Formatting.GOLD));
+                sendAdminData(admin);
             }
             case AdminActionPayload.SET_PHASE -> {
-                PlayerProgress tp = resolveProgressByName(admin.server, state, payload.targetPlayer());
+                UUID targetId = parseTargetUuid(payload.targetPlayer());
+                PlayerProgress tp = targetId != null ? state.getProgress(targetId) : null;
                 if (tp != null && tp.isStarted()) {
                     int newPhase = Math.max(1, Math.min(payload.value(), PhaseManager.getMaxPhase()));
                     tp.setCurrentPhase(newPhase);
                     state.markDirty();
-                    // Notify online target
-                    ServerPlayerEntity onlineTarget = admin.server.getPlayerManager().getPlayer(payload.targetPlayer());
+                    ServerPlayerEntity onlineTarget = targetId != null
+                            ? admin.server.getPlayerManager().getPlayer(targetId) : null;
                     if (onlineTarget != null) ModNetworking.syncQuestProgress(onlineTarget, tp);
-                    admin.sendMessage(Text.literal("Set " + payload.targetPlayer() + " to phase " + newPhase)
+                    String name = resolveName(admin.server, targetId);
+                    admin.sendMessage(Text.literal("Set " + name + " to phase " + newPhase)
                             .formatted(Formatting.GREEN));
                 } else {
                     admin.sendMessage(Text.literal("Player not found or hasn't started.").formatted(Formatting.RED));
                 }
+                sendAdminData(admin);
             }
             case AdminActionPayload.RESET_PLAYER -> {
-                PlayerProgress tp = resolveProgressByName(admin.server, state, payload.targetPlayer());
+                UUID targetId = parseTargetUuid(payload.targetPlayer());
+                PlayerProgress tp = targetId != null ? state.getProgress(targetId) : null;
                 if (tp != null) {
                     BlockPos savedPos = tp.getOneBlockPos();
                     tp.resetAll();
-                    // Reuse existing island slot instead of allocating a new one
                     tp.setStarted(true);
                     tp.setCurrentPhase(1);
                     tp.setOneBlockPos(savedPos);
                     state.markDirty();
-                    // If online, sync immediately
-                    ServerPlayerEntity onlineTarget = admin.server.getPlayerManager().getPlayer(payload.targetPlayer());
+                    ServerPlayerEntity onlineTarget = targetId != null
+                            ? admin.server.getPlayerManager().getPlayer(targetId) : null;
                     if (onlineTarget != null) {
                         OneBlockCommand.initializeChallenge(onlineTarget);
                         ModNetworking.syncQuestProgress(onlineTarget, tp);
                     }
-                    admin.sendMessage(Text.literal("Reset " + payload.targetPlayer()).formatted(Formatting.GREEN));
+                    String name = resolveName(admin.server, targetId);
+                    admin.sendMessage(Text.literal("Reset " + name).formatted(Formatting.GREEN));
                 } else {
                     admin.sendMessage(Text.literal("Player not found.").formatted(Formatting.RED));
                 }
+                sendAdminData(admin);
             }
+        }
+    }
+
+    private static UUID parseTargetUuid(String uuidStr) {
+        try {
+            return UUID.fromString(uuidStr);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
@@ -428,20 +442,6 @@ public class ModNetworking {
                     true, team.getTeamName(), resolveName(player.server, team.getLeaderId()),
                     members, invites, team.isMergedIslands(), message));
         }
-    }
-
-    /** Find PlayerProgress by display name, works for both online and offline players. */
-    private static PlayerProgress resolveProgressByName(MinecraftServer server,
-                                                         OneBlockWorldState state, String name) {
-        // Check online first (fast path)
-        ServerPlayerEntity online = server.getPlayerManager().getPlayer(name);
-        if (online != null) return state.getProgress(online.getUuid());
-        // Fall back: scan all progress entries and resolve names
-        for (Map.Entry<UUID, PlayerProgress> entry : state.getAllProgress().entrySet()) {
-            String resolved = resolveName(server, entry.getKey());
-            if (resolved.equalsIgnoreCase(name)) return entry.getValue();
-        }
-        return null;
     }
 
     private static String resolveName(MinecraftServer server, UUID playerId) {

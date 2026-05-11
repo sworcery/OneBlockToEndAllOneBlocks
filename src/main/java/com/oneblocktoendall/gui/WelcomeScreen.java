@@ -64,8 +64,10 @@ public class WelcomeScreen extends Screen {
         context.drawCenteredTextWithShadow(textRenderer,
                 "Break the block. Complete quests.", centerX, y, 0xFFCCCCCC);
         y += lineHeight;
+        int maxPhase = QuestHudRenderer.getCachedData() != null
+                ? QuestHudRenderer.getCachedData().maxPhase() : 25;
         context.drawCenteredTextWithShadow(textRenderer,
-                "Advance through 25 phases to win!", centerX, y, 0xFFCCCCCC);
+                "Advance through " + maxPhase + " phases to win!", centerX, y, 0xFFCCCCCC);
         y += lineHeight + 8;
 
         // Controls header

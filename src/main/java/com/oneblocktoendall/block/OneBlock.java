@@ -28,7 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * The One Block — the central block of the entire mod.
  *
- * It uses an integer block state property (PHASE, 1-10) to change its visual
+ * It uses an integer block state property (PHASE, 1-25) to change its visual
  * appearance per phase. When broken, it does NOT drop itself — instead the
  * PhaseManager picks a random item from the current phase's loot pool.
  *
@@ -135,11 +135,12 @@ public class OneBlock extends Block {
                 PlayerProgress progress = worldState.getProgress(serverPlayer.getUuid());
                 if (progress != null && progress.isStarted()) {
                     int total = progress.incrementBlocksBroken();
-                    worldState.markDirty();
+                    if (total % 10 == 0) worldState.markDirty();
 
                     // Check milestones
                     for (int milestone : MILESTONES) {
                         if (total == milestone) {
+                            worldState.markDirty();
                             serverPlayer.sendMessage(Text.literal(
                                     "\uD83C\uDFC6 Milestone: " + milestone + " blocks broken!")
                                     .formatted(Formatting.AQUA, Formatting.BOLD));

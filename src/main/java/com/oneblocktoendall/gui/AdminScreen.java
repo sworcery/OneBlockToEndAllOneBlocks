@@ -32,7 +32,6 @@ public class AdminScreen extends Screen {
                 button -> {
                     ClientPlayNetworking.send(new AdminActionPayload(
                             AdminActionPayload.TOGGLE_AUTO_START, "", 0));
-                    close();
                 }
         ).dimensions(panelX + 15, panelY + 35, 150, 16).build());
 
@@ -40,26 +39,23 @@ public class AdminScreen extends Screen {
         int y = panelY + 70;
         for (AdminDataPayload.PlayerInfo player : data.players()) {
             if (y > panelY + PANEL_HEIGHT - 50) break;
-            final String name = player.name();
+            final String id = player.playerId().toString();
 
             // Phase +/- buttons
             addDrawableChild(ButtonWidget.builder(Text.literal("+"), button -> {
                 ClientPlayNetworking.send(new AdminActionPayload(
-                        AdminActionPayload.SET_PHASE, name, player.phase() + 1));
-                close();
+                        AdminActionPayload.SET_PHASE, id, player.phase() + 1));
             }).dimensions(panelX + PANEL_WIDTH - 105, y - 2, 20, 16).build());
 
             addDrawableChild(ButtonWidget.builder(Text.literal("-"), button -> {
                 ClientPlayNetworking.send(new AdminActionPayload(
-                        AdminActionPayload.SET_PHASE, name, Math.max(1, player.phase() - 1)));
-                close();
+                        AdminActionPayload.SET_PHASE, id, Math.max(1, player.phase() - 1)));
             }).dimensions(panelX + PANEL_WIDTH - 80, y - 2, 20, 16).build());
 
             // Reset button
             addDrawableChild(ButtonWidget.builder(Text.literal("Reset"), button -> {
                 ClientPlayNetworking.send(new AdminActionPayload(
-                        AdminActionPayload.RESET_PLAYER, name, 0));
-                close();
+                        AdminActionPayload.RESET_PLAYER, id, 0));
             }).dimensions(panelX + PANEL_WIDTH - 55, y - 2, 40, 16).build());
 
             y += 22;

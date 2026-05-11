@@ -12,6 +12,7 @@ public class PhaseCelebrationScreen extends Screen {
     private static final int PANEL_WIDTH = 300;
     private static final int PANEL_HEIGHT = 280;
     private final PhaseAdvancePayload data;
+    private int scrollOffset = 0;
 
     public PhaseCelebrationScreen(PhaseAdvancePayload data) {
         super(Text.literal("Phase Complete!"));
@@ -45,12 +46,16 @@ public class PhaseCelebrationScreen extends Screen {
         context.fill(panelX + 10, y, panelX + PANEL_WIDTH - 10, y + 1, 0xFF666666);
         y += 8;
 
+        int contentTop = y;
+        int contentBottom = panelY + PANEL_HEIGHT - 38;
+        context.enableScissor(panelX, contentTop, panelX + PANEL_WIDTH, contentBottom);
+        y -= scrollOffset;
+
         // New blocks
         if (!data.newBlockNames().isEmpty()) {
             context.drawTextWithShadow(textRenderer, "New Blocks Unlocked:", panelX + 15, y, 0xFF55FF55);
             y += 14;
             for (String block : data.newBlockNames()) {
-                if (y > panelY + PANEL_HEIGHT - 50) break;
                 String displayName = block.replace("minecraft:", "").replace("_", " ");
                 context.drawTextWithShadow(textRenderer, "  + " + displayName, panelX + 20, y, 0xFFCCCCCC);
                 y += 12;
@@ -63,7 +68,6 @@ public class PhaseCelebrationScreen extends Screen {
             context.drawTextWithShadow(textRenderer, "New Mobs:", panelX + 15, y, 0xFFFF8844);
             y += 14;
             for (String mob : data.newMobNames()) {
-                if (y > panelY + PANEL_HEIGHT - 50) break;
                 String displayName = mob.replace("minecraft:", "").replace("_", " ");
                 context.drawTextWithShadow(textRenderer, "  + " + displayName, panelX + 20, y, 0xFFCCCCCC);
                 y += 12;
@@ -76,7 +80,6 @@ public class PhaseCelebrationScreen extends Screen {
             context.drawTextWithShadow(textRenderer, "New Quests:", panelX + 15, y, 0xFFFFFF55);
             y += 14;
             for (QuestSyncPayload.QuestStatus quest : data.newQuests()) {
-                if (y > panelY + PANEL_HEIGHT - 50) break;
                 context.drawTextWithShadow(textRenderer, "  • " + quest.name(), panelX + 20, y, 0xFFCCCCCC);
                 y += 12;
             }
@@ -88,7 +91,6 @@ public class PhaseCelebrationScreen extends Screen {
             context.drawTextWithShadow(textRenderer, "Alliance Quests:", panelX + 15, y, 0xFFFF88FF);
             y += 14;
             for (QuestSyncPayload.QuestStatus quest : data.newAllianceQuests()) {
-                if (y > panelY + PANEL_HEIGHT - 50) break;
                 context.drawTextWithShadow(textRenderer, "  ★ " + quest.name(), panelX + 20, y, 0xFFCCCCCC);
                 y += 12;
             }
@@ -100,13 +102,21 @@ public class PhaseCelebrationScreen extends Screen {
             context.drawTextWithShadow(textRenderer, "Co-op Quests:", panelX + 15, y, 0xFF55AAFF);
             y += 14;
             for (QuestSyncPayload.QuestStatus quest : data.newCoopQuests()) {
-                if (y > panelY + PANEL_HEIGHT - 50) break;
                 context.drawTextWithShadow(textRenderer, "  ✦ " + quest.name(), panelX + 20, y, 0xFFCCCCCC);
                 y += 12;
             }
         }
 
+        context.disableScissor();
+
         super.render(context, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        scrollOffset -= (int) verticalAmount * 14;
+        scrollOffset = Math.max(0, scrollOffset);
+        return true;
     }
 
     @Override

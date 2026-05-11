@@ -60,8 +60,10 @@ public class StartScreen extends Screen {
         context.drawCenteredTextWithShadow(textRenderer,
                 "Break one block. Complete quests.", centerX, y, 0xFFCCCCCC);
         y += 14;
+        int maxPhase = QuestHudRenderer.getCachedData() != null
+                ? QuestHudRenderer.getCachedData().maxPhase() : 25;
         context.drawCenteredTextWithShadow(textRenderer,
-                "Advance through 25 phases to win!", centerX, y, 0xFFCCCCCC);
+                "Advance through " + maxPhase + " phases to win!", centerX, y, 0xFFCCCCCC);
         y += 14;
         context.drawCenteredTextWithShadow(textRenderer,
                 "Choose how you want to join:", centerX, y, 0xFF999999);

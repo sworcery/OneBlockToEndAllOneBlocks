@@ -8,13 +8,14 @@ import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public record AdminDataPayload(
         List<PlayerInfo> players,
         boolean autoStart
 ) implements CustomPayload {
 
-    public record PlayerInfo(String name, int phase, int questsCompleted, int blocksBroken, boolean online, boolean spectating) {}
+    public record PlayerInfo(UUID playerId, String name, int phase, int questsCompleted, int blocksBroken, boolean online, boolean spectating) {}
 
     public static final Id<AdminDataPayload> ID = new Id<>(
             Identifier.of(OneBlockMod.MOD_ID, "admin_data"));
@@ -25,6 +26,7 @@ public record AdminDataPayload(
     private void write(RegistryByteBuf buf) {
         buf.writeInt(players.size());
         for (PlayerInfo p : players) {
+            buf.writeUuid(p.playerId());
             buf.writeString(p.name());
             buf.writeInt(p.phase());
             buf.writeInt(p.questsCompleted());
@@ -40,7 +42,7 @@ public record AdminDataPayload(
         List<PlayerInfo> players = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             players.add(new PlayerInfo(
-                    buf.readString(), buf.readInt(), buf.readInt(),
+                    buf.readUuid(), buf.readString(), buf.readInt(), buf.readInt(),
                     buf.readInt(), buf.readBoolean(), buf.readBoolean()));
         }
         return new AdminDataPayload(players, buf.readBoolean());

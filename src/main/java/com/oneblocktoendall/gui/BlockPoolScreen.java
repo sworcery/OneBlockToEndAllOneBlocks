@@ -94,7 +94,9 @@ public class BlockPoolScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-        scrollOffset = Math.max(0, Math.min(scrollOffset - (int) verticalAmount, data.blocks().size() - 1));
+        int visibleRows = (PANEL_HEIGHT - 110) / 11;
+        int maxScroll = Math.max(0, data.blocks().size() - visibleRows);
+        scrollOffset = Math.max(0, Math.min(scrollOffset - (int) verticalAmount, maxScroll));
         return true;
     }
 
