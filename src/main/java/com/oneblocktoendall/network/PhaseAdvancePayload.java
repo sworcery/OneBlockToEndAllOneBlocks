@@ -14,7 +14,10 @@ public record PhaseAdvancePayload(
         String phaseName,
         List<String> newBlockNames,
         List<String> newMobNames,
-        List<QuestSyncPayload.QuestStatus> newQuests
+        List<QuestSyncPayload.QuestStatus> newQuests,
+        List<QuestSyncPayload.QuestStatus> newAllianceQuests,
+        List<QuestSyncPayload.QuestStatus> newCoopQuests,
+        boolean isMerge
 ) implements CustomPayload {
 
     public static final Id<PhaseAdvancePayload> ID = new Id<>(
@@ -30,15 +33,10 @@ public record PhaseAdvancePayload(
         for (String s : newBlockNames) buf.writeString(s);
         buf.writeInt(newMobNames.size());
         for (String s : newMobNames) buf.writeString(s);
-        buf.writeInt(newQuests.size());
-        for (QuestSyncPayload.QuestStatus q : newQuests) {
-            buf.writeString(q.questId());
-            buf.writeString(q.name());
-            buf.writeString(q.description());
-            buf.writeInt(q.progress());
-            buf.writeInt(q.required());
-            buf.writeBoolean(q.completed());
-        }
+        writeQuestList(buf, newQuests);
+        writeQuestList(buf, newAllianceQuests);
+        writeQuestList(buf, newCoopQuests);
+        buf.writeBoolean(isMerge);
     }
 
     private static PhaseAdvancePayload read(RegistryByteBuf buf) {
@@ -50,14 +48,36 @@ public record PhaseAdvancePayload(
         int mobCount = buf.readInt();
         List<String> mobs = new ArrayList<>();
         for (int i = 0; i < mobCount; i++) mobs.add(buf.readString());
-        int questCount = buf.readInt();
-        List<QuestSyncPayload.QuestStatus> quests = new ArrayList<>();
-        for (int i = 0; i < questCount; i++) {
-            quests.add(new QuestSyncPayload.QuestStatus(
+        List<QuestSyncPayload.QuestStatus> quests = readQuestList(buf);
+        List<QuestSyncPayload.QuestStatus> allianceQuests = readQuestList(buf);
+        List<QuestSyncPayload.QuestStatus> coopQuests = readQuestList(buf);
+        boolean isMerge = buf.readBoolean();
+        return new PhaseAdvancePayload(phase, name, blocks, mobs,
+                quests, allianceQuests, coopQuests, isMerge);
+    }
+
+    private static void writeQuestList(RegistryByteBuf buf,
+                                        List<QuestSyncPayload.QuestStatus> list) {
+        buf.writeInt(list.size());
+        for (QuestSyncPayload.QuestStatus q : list) {
+            buf.writeString(q.questId());
+            buf.writeString(q.name());
+            buf.writeString(q.description());
+            buf.writeInt(q.progress());
+            buf.writeInt(q.required());
+            buf.writeBoolean(q.completed());
+        }
+    }
+
+    private static List<QuestSyncPayload.QuestStatus> readQuestList(RegistryByteBuf buf) {
+        int count = buf.readInt();
+        List<QuestSyncPayload.QuestStatus> list = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            list.add(new QuestSyncPayload.QuestStatus(
                     buf.readString(), buf.readString(), buf.readString(),
                     buf.readInt(), buf.readInt(), buf.readBoolean()));
         }
-        return new PhaseAdvancePayload(phase, name, blocks, mobs, quests);
+        return list;
     }
 
     @Override

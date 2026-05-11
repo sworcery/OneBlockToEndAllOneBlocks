@@ -10,7 +10,7 @@ import net.minecraft.text.Text;
 public class PhaseCelebrationScreen extends Screen {
 
     private static final int PANEL_WIDTH = 300;
-    private static final int PANEL_HEIGHT = 260;
+    private static final int PANEL_HEIGHT = 280;
     private final PhaseAdvancePayload data;
 
     public PhaseCelebrationScreen(PhaseAdvancePayload data) {
@@ -71,13 +71,37 @@ public class PhaseCelebrationScreen extends Screen {
             y += 4;
         }
 
-        // New quests
+        // Solo quests
         if (!data.newQuests().isEmpty()) {
             context.drawTextWithShadow(textRenderer, "New Quests:", panelX + 15, y, 0xFFFFFF55);
             y += 14;
             for (QuestSyncPayload.QuestStatus quest : data.newQuests()) {
                 if (y > panelY + PANEL_HEIGHT - 50) break;
-                context.drawTextWithShadow(textRenderer, "  \u2022 " + quest.name(), panelX + 20, y, 0xFFCCCCCC);
+                context.drawTextWithShadow(textRenderer, "  • " + quest.name(), panelX + 20, y, 0xFFCCCCCC);
+                y += 12;
+            }
+            y += 4;
+        }
+
+        // Alliance quests (only shown for merged teams)
+        if (!data.newAllianceQuests().isEmpty()) {
+            context.drawTextWithShadow(textRenderer, "Alliance Quests:", panelX + 15, y, 0xFFFF88FF);
+            y += 14;
+            for (QuestSyncPayload.QuestStatus quest : data.newAllianceQuests()) {
+                if (y > panelY + PANEL_HEIGHT - 50) break;
+                context.drawTextWithShadow(textRenderer, "  ★ " + quest.name(), panelX + 20, y, 0xFFCCCCCC);
+                y += 12;
+            }
+            y += 4;
+        }
+
+        // Co-op quests
+        if (!data.newCoopQuests().isEmpty()) {
+            context.drawTextWithShadow(textRenderer, "Co-op Quests:", panelX + 15, y, 0xFF55AAFF);
+            y += 14;
+            for (QuestSyncPayload.QuestStatus quest : data.newCoopQuests()) {
+                if (y > panelY + PANEL_HEIGHT - 50) break;
+                context.drawTextWithShadow(textRenderer, "  ✦ " + quest.name(), panelX + 20, y, 0xFFCCCCCC);
                 y += 12;
             }
         }
@@ -87,7 +111,6 @@ public class PhaseCelebrationScreen extends Screen {
 
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-        // Skip default blur — we draw our own dark overlay in render()
     }
 
     @Override

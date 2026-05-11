@@ -3,6 +3,7 @@ package com.oneblocktoendall.block;
 import com.oneblocktoendall.data.OneBlockWorldState;
 import com.oneblocktoendall.phase.PhaseManager;
 import com.oneblocktoendall.quest.PlayerProgress;
+import com.oneblocktoendall.team.Team;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -101,6 +102,25 @@ public class OneBlock extends Block {
                 if (player instanceof ServerPlayerEntity sp) {
                     sp.sendMessage(Text.literal("\u2728 Lucky Drop! Bonus item from the next phase!")
                             .formatted(Formatting.GOLD, Formatting.ITALIC));
+                }
+            }
+
+            // Teleporter block bonus drop for merged teams at phase 8+
+            if (phase >= 8 && ThreadLocalRandom.current().nextDouble() < 0.02
+                    && player instanceof ServerPlayerEntity sp) {
+                OneBlockWorldState ws = OneBlockWorldState.get(sp.server);
+                PlayerProgress pp = ws.getProgress(sp.getUuid());
+                if (pp != null && pp.getTeamId() != null) {
+                    Team t = ws.getTeam(pp.getTeamId());
+                    if (t != null && t.isMergedIslands()) {
+                        Block.dropStack(serverWorld, pos.up(),
+                                new ItemStack(ModBlocks.TELEPORTER_BLOCK));
+                        serverWorld.spawnParticles(ParticleTypes.REVERSE_PORTAL,
+                                pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
+                                20, 0.3, 0.5, 0.3, 0.05);
+                        sp.sendMessage(Text.literal("★ Teleporter Block found!")
+                                .formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD));
+                    }
                 }
             }
 

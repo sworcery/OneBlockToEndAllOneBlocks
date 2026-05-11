@@ -69,11 +69,15 @@ public class OneBlockModClient implements ClientModInitializer {
                     });
                 });
 
-        // 5. Phase advance celebration screen
+        // 5. Phase advance celebration screen (or bridge merge celebration)
         ClientPlayNetworking.registerGlobalReceiver(PhaseAdvancePayload.ID,
                 (payload, context) -> {
                     context.client().execute(() -> {
-                        MinecraftClient.getInstance().setScreen(new PhaseCelebrationScreen(payload));
+                        if (payload.isMerge()) {
+                            MinecraftClient.getInstance().setScreen(new BridgeCelebrationScreen(payload));
+                        } else {
+                            MinecraftClient.getInstance().setScreen(new PhaseCelebrationScreen(payload));
+                        }
                     });
                 });
 

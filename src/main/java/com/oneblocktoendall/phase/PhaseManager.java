@@ -220,11 +220,31 @@ public class PhaseManager {
                             id));
                 }
 
+                List<Quest> allianceQuests = parseQuestList(phaseObj, "allianceQuests", id);
+                List<Quest> coopQuests = parseQuestList(phaseObj, "coopQuests", id);
+
                 PHASES.put(id, new Phase(id, name, displayBlock, blockPool, mobSpawns,
-                        mobSpawnChance, quests));
+                        mobSpawnChance, quests, allianceQuests, coopQuests));
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to load phases.json", e);
         }
+    }
+
+    private static List<Quest> parseQuestList(JsonObject phaseObj, String key, int phaseId) {
+        List<Quest> result = new ArrayList<>();
+        if (!phaseObj.has(key)) return result;
+        for (JsonElement e : phaseObj.getAsJsonArray(key)) {
+            JsonObject q = e.getAsJsonObject();
+            result.add(new Quest(
+                    q.get("id").getAsString(),
+                    q.get("name").getAsString(),
+                    q.get("description").getAsString(),
+                    QuestType.valueOf(q.get("type").getAsString()),
+                    q.get("target").getAsString(),
+                    q.get("count").getAsInt(),
+                    phaseId));
+        }
+        return result;
     }
 }

@@ -21,6 +21,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ModNetworking {
 
@@ -163,9 +164,48 @@ public class ModNetworking {
                     quest.count(), progress.isQuestCompleted(quest.id())));
         }
 
+        OneBlockWorldState state = OneBlockWorldState.get(player.server);
+        boolean isMerged = false;
+        List<QuestSyncPayload.QuestStatus> allianceStatuses = new ArrayList<>();
+        List<QuestSyncPayload.QuestStatus> coopStatuses = new ArrayList<>();
+
+        if (progress.getTeamId() != null) {
+            Team team = state.getTeam(progress.getTeamId());
+            if (team != null && team.isMergedIslands()) {
+                isMerged = true;
+                allianceStatuses = buildAllianceQuestStatuses(player, phase, progress);
+                coopStatuses = buildCoopQuestStatuses(player.server, phase, team, state);
+            }
+        }
+
         ServerPlayNetworking.send(player, new QuestSyncPayload(
                 progress.getCurrentPhase(), PhaseManager.getMaxPhase(),
-                phase.name(), questStatuses));
+                phase.name(), questStatuses, allianceStatuses, coopStatuses, isMerged));
+    }
+
+    private static List<QuestSyncPayload.QuestStatus> buildAllianceQuestStatuses(
+            ServerPlayerEntity player, Phase phase, PlayerProgress progress) {
+        List<QuestSyncPayload.QuestStatus> statuses = new ArrayList<>();
+        for (Quest quest : phase.allianceQuests()) {
+            statuses.add(new QuestSyncPayload.QuestStatus(
+                    quest.id(), quest.name(), quest.description(),
+                    QuestManager.getQuestProgress(player, quest, progress),
+                    quest.count(), progress.isQuestCompleted(quest.id())));
+        }
+        return statuses;
+    }
+
+    private static List<QuestSyncPayload.QuestStatus> buildCoopQuestStatuses(
+            MinecraftServer server, Phase phase, Team team, OneBlockWorldState state) {
+        List<QuestSyncPayload.QuestStatus> statuses = new ArrayList<>();
+        for (Quest quest : phase.coopQuests()) {
+            int teamTotal = QuestManager.getCoopQuestProgress(server, quest, team, state);
+            boolean completed = teamTotal >= quest.count();
+            statuses.add(new QuestSyncPayload.QuestStatus(
+                    quest.id(), quest.name(), quest.description(),
+                    Math.min(teamTotal, quest.count()), quest.count(), completed));
+        }
+        return statuses;
     }
 
     public static void sendToast(ServerPlayerEntity player, ToastPayload payload) {

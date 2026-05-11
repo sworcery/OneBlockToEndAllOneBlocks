@@ -35,11 +35,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Runs every server tick. Handles critical game loop jobs:
@@ -117,34 +119,43 @@ public class OneBlockTickHandler {
                 continue;
             }
 
-            // Check quests and get newly completed ones
-            List<String> newlyCompleted = QuestManager.checkQuests(player, progress);
+            // Check solo quests
+            List<String> newlyCompleted = new ArrayList<>(QuestManager.checkQuests(player, progress));
+
+            // Check team quests if in a merged team
+            Team playerTeam = null;
+            if (progress.getTeamId() != null) {
+                Team team = state.getTeam(progress.getTeamId());
+                if (team != null && team.isMergedIslands()) {
+                    playerTeam = team;
+                    newlyCompleted.addAll(QuestManager.checkAllianceQuests(player, progress));
+                    newlyCompleted.addAll(QuestManager.checkCoopQuests(
+                            server, team, state, progress.getCurrentPhase()));
+                }
+            }
 
             // Notify player of completed quests with sound effect
             for (String questId : newlyCompleted) {
                 Phase phase = PhaseManager.getPhase(progress.getCurrentPhase());
                 if (phase == null) continue;
 
-                phase.quests().stream()
-                        .filter(q -> q.id().equals(questId))
-                        .findFirst()
-                        .ifPresent(quest -> {
-                            player.sendMessage(Text.literal("\u2714 Quest Complete: " + quest.name())
-                                    .formatted(Formatting.GREEN, Formatting.BOLD));
-                            player.getServerWorld().playSound(null, player.getBlockPos(),
-                                    SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,
-                                    SoundCategory.PLAYERS, 1.0f, 1.0f);
-                            // Send toast notification
-                            ModNetworking.sendToast(player, new ToastPayload(
-                                    ToastPayload.TYPE_QUEST, player.getName().getString(),
-                                    "", quest.name(), 0));
-                            state.markDirty();
-                        });
+                findQuestById(phase, questId).ifPresent(quest -> {
+                    player.sendMessage(Text.literal("\u2714 Quest Complete: " + quest.name())
+                            .formatted(Formatting.GREEN, Formatting.BOLD));
+                    player.getServerWorld().playSound(null, player.getBlockPos(),
+                            SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,
+                            SoundCategory.PLAYERS, 1.0f, 1.0f);
+                    ModNetworking.sendToast(player, new ToastPayload(
+                            ToastPayload.TYPE_QUEST, player.getName().getString(),
+                            "", quest.name(), 0));
+                    state.markDirty();
+                });
             }
 
             // Check if all quests in current phase are done — checked unconditionally so players
             // who log out on a completed phase still advance when they log back in.
-            if (QuestManager.isPhaseComplete(progress) && !progress.isPhaseCompleteNotified()) {
+            if (QuestManager.isPhaseComplete(progress, playerTeam, state)
+                    && !progress.isPhaseCompleteNotified()) {
                 advancePhase(player, progress, state);
             }
 
@@ -243,8 +254,30 @@ public class OneBlockTickHandler {
             questStatuses.add(new QuestSyncPayload.QuestStatus(
                     quest.id(), quest.name(), quest.description(), 0, quest.count(), false));
         }
+
+        // Include team quest info if in merged team
+        OneBlockWorldState advState = OneBlockWorldState.get(player.server);
+        List<QuestSyncPayload.QuestStatus> allianceStatuses = new ArrayList<>();
+        List<QuestSyncPayload.QuestStatus> coopStatuses = new ArrayList<>();
+        boolean isMerged = false;
+        if (progress.getTeamId() != null) {
+            Team team = advState.getTeam(progress.getTeamId());
+            if (team != null && team.isMergedIslands()) {
+                isMerged = true;
+                for (Quest quest : nextPhase.allianceQuests()) {
+                    allianceStatuses.add(new QuestSyncPayload.QuestStatus(
+                            quest.id(), quest.name(), quest.description(), 0, quest.count(), false));
+                }
+                for (Quest quest : nextPhase.coopQuests()) {
+                    coopStatuses.add(new QuestSyncPayload.QuestStatus(
+                            quest.id(), quest.name(), quest.description(), 0, quest.count(), false));
+                }
+            }
+        }
+
         ServerPlayNetworking.send(player, new PhaseAdvancePayload(
-                newPhase, nextPhase.name(), newBlocks, newMobs, questStatuses));
+                newPhase, nextPhase.name(), newBlocks, newMobs, questStatuses,
+                allianceStatuses, coopStatuses, isMerged));
 
         // Broadcast phase toast to all players
         String playerName = player.getName().getString();
@@ -263,6 +296,13 @@ public class OneBlockTickHandler {
             world.playSound(null, pos, SoundEvents.ENTITY_ENDER_DRAGON_GROWL,
                     SoundCategory.HOSTILE, 0.6f, 1.2f);
         }
+    }
+
+    private static Optional<Quest> findQuestById(Phase phase, String questId) {
+        return Stream.of(phase.quests(), phase.allianceQuests(), phase.coopQuests())
+                .flatMap(List::stream)
+                .filter(q -> q.id().equals(questId))
+                .findFirst();
     }
 
     /**
@@ -332,25 +372,52 @@ public class OneBlockTickHandler {
     }
 
     /**
-     * BFS flood-fill from island A through solid blocks to see if island B is reachable.
-     *
-     * Limits: 25000 blocks visited (generous for a 250-block bridge with platform builds),
-     * seed radius 8 around island A, target detection radius 12 around island B.
+     * Bidirectional BFS from both islands to detect a solid-block bridge.
+     * Alternates expansion from each side; connection found when visited sets overlap.
+     * This prevents large player bases from exhausting the visit budget before
+     * reaching the bridge.
      */
     private static boolean hasBridgeConnection(ServerWorld world, BlockPos posA, BlockPos posB) {
         int yMin = Math.min(posA.getY(), posB.getY()) - 20;
         int yMax = Math.max(posA.getY(), posB.getY()) + 50;
-        int targetRadiusSq = 12 * 12;
-        int maxVisited = 25000;
+        int maxVisitedPerSide = 30000;
 
-        Set<Long> visited = new HashSet<>();
-        Queue<Long> queue = new ArrayDeque<>();
+        if (!world.isChunkLoaded(posA.getX() >> 4, posA.getZ() >> 4)
+                || !world.isChunkLoaded(posB.getX() >> 4, posB.getZ() >> 4)) {
+            return false;
+        }
 
-        // Seed BFS from non-air blocks within radius 8 of island A
+        Set<Long> visitedA = new HashSet<>();
+        Set<Long> visitedB = new HashSet<>();
+        Queue<Long> queueA = new ArrayDeque<>();
+        Queue<Long> queueB = new ArrayDeque<>();
+
+        seedBFS(world, posA, visitedA, queueA);
+        seedBFS(world, posB, visitedB, queueB);
+
+        // Check if seed sets already overlap (islands very close)
+        for (long packed : visitedA) {
+            if (visitedB.contains(packed)) return true;
+        }
+
+        while ((!queueA.isEmpty() || !queueB.isEmpty())
+                && (visitedA.size() + visitedB.size()) < maxVisitedPerSide * 2) {
+            if (!queueA.isEmpty()) {
+                if (expandBFS(world, queueA, visitedA, visitedB, yMin, yMax)) return true;
+            }
+            if (!queueB.isEmpty()) {
+                if (expandBFS(world, queueB, visitedB, visitedA, yMin, yMax)) return true;
+            }
+        }
+        return false;
+    }
+
+    private static void seedBFS(ServerWorld world, BlockPos center,
+                                 Set<Long> visited, Queue<Long> queue) {
         for (int dx = -8; dx <= 8; dx++) {
             for (int dy = -4; dy <= 8; dy++) {
                 for (int dz = -8; dz <= 8; dz++) {
-                    BlockPos seed = posA.add(dx, dy, dz);
+                    BlockPos seed = center.add(dx, dy, dz);
                     long packed = seed.asLong();
                     if (!world.getBlockState(seed).isAir() && visited.add(packed)) {
                         queue.add(packed);
@@ -358,17 +425,16 @@ public class OneBlockTickHandler {
                 }
             }
         }
+    }
 
-        while (!queue.isEmpty() && visited.size() < maxVisited) {
+    private static boolean expandBFS(ServerWorld world, Queue<Long> queue,
+                                      Set<Long> thisVisited, Set<Long> otherVisited,
+                                      int yMin, int yMax) {
+        int batchSize = Math.min(queue.size(), 500);
+        for (int i = 0; i < batchSize; i++) {
+            if (queue.isEmpty()) break;
             BlockPos current = BlockPos.fromLong(queue.poll());
 
-            // Check if we've reached island B's vicinity
-            int ddx = current.getX() - posB.getX();
-            int ddy = current.getY() - posB.getY();
-            int ddz = current.getZ() - posB.getZ();
-            if (ddx * ddx + ddy * ddy + ddz * ddz <= targetRadiusSq) return true;
-
-            // Expand to 6 adjacent non-air blocks
             BlockPos[] neighbors = {
                 current.north(), current.south(), current.east(),
                 current.west(), current.up(), current.down()
@@ -376,7 +442,8 @@ public class OneBlockTickHandler {
             for (BlockPos neighbor : neighbors) {
                 if (neighbor.getY() < yMin || neighbor.getY() > yMax) continue;
                 long packed = neighbor.asLong();
-                if (!visited.add(packed)) continue;
+                if (!thisVisited.add(packed)) continue;
+                if (otherVisited.contains(packed)) return true;
                 if (!world.getBlockState(neighbor).isAir()) {
                     queue.add(packed);
                 }
@@ -385,16 +452,11 @@ public class OneBlockTickHandler {
         return false;
     }
 
-    /**
-     * Called when a bridge is detected. Sets the team as merged, bumps all members
-     * to max(currentPhases) + 1, notifies everyone, and broadcasts server-wide.
-     */
     private static void triggerIslandMerge(MinecraftServer server, OneBlockWorldState state,
                                             ServerWorld world, Team team,
                                             List<PlayerProgress> memberProgress) {
         team.setMergedIslands(true);
 
-        // Everyone advances to the highest current phase + 1 (capped at max)
         int maxPhase = PhaseManager.getMaxPhase();
         int targetPhase = memberProgress.stream()
                 .mapToInt(PlayerProgress::getCurrentPhase)
@@ -407,25 +469,33 @@ public class OneBlockTickHandler {
         List<String> newBlocks = PhaseManager.getNewItemsForPhase(targetPhase);
         List<String> newMobs = PhaseManager.getNewMobsForPhase(targetPhase);
         List<QuestSyncPayload.QuestStatus> questStatuses = new ArrayList<>();
+        List<QuestSyncPayload.QuestStatus> allianceStatuses = new ArrayList<>();
+        List<QuestSyncPayload.QuestStatus> coopStatuses = new ArrayList<>();
         if (newPhaseObj != null) {
             for (Quest quest : newPhaseObj.quests()) {
                 questStatuses.add(new QuestSyncPayload.QuestStatus(
+                        quest.id(), quest.name(), quest.description(), 0, quest.count(), false));
+            }
+            for (Quest quest : newPhaseObj.allianceQuests()) {
+                allianceStatuses.add(new QuestSyncPayload.QuestStatus(
+                        quest.id(), quest.name(), quest.description(), 0, quest.count(), false));
+            }
+            for (Quest quest : newPhaseObj.coopQuests()) {
+                coopStatuses.add(new QuestSyncPayload.QuestStatus(
                         quest.id(), quest.name(), quest.description(), 0, quest.count(), false));
             }
         }
 
         final int finalTargetPhase = targetPhase;
         for (PlayerProgress progress : memberProgress) {
-            progress.setCurrentPhase(finalTargetPhase); // resets phaseCompleteNotified
+            progress.setCurrentPhase(finalTargetPhase);
 
-            // Update the one block visual
             BlockPos pos = progress.getOneBlockPos();
             if (world.getBlockState(pos).getBlock() instanceof OneBlock) {
                 world.setBlockState(pos, ModBlocks.ONE_BLOCK.getDefaultState()
                         .with(OneBlock.PHASE, Math.min(finalTargetPhase, 25)));
             }
 
-            // Notify the player if they're online
             ServerPlayerEntity player = server.getPlayerManager().getPlayer(progress.getPlayerId());
             if (player != null) {
                 player.sendMessage(Text.empty());
@@ -435,8 +505,8 @@ public class OneBlockTickHandler {
                         .formatted(Formatting.GREEN));
                 player.sendMessage(Text.literal("Advanced to Phase " + finalTargetPhase + ": " + phaseName)
                         .formatted(Formatting.AQUA, Formatting.BOLD));
-                player.sendMessage(Text.literal("Use /oneblock visit <player> to teleport to your ally's island.")
-                        .formatted(Formatting.YELLOW));
+                player.sendMessage(Text.literal("Alliance and co-op quests are now unlocked!")
+                        .formatted(Formatting.LIGHT_PURPLE));
                 player.sendMessage(Text.empty());
 
                 world.playSound(null, player.getBlockPos(),
@@ -452,7 +522,8 @@ public class OneBlockTickHandler {
 
                 ServerPlayNetworking.send(player, new PhaseAdvancePayload(
                         finalTargetPhase, "\u2605 Islands Merged! " + phaseName,
-                        newBlocks, newMobs, questStatuses));
+                        newBlocks, newMobs, questStatuses,
+                        allianceStatuses, coopStatuses, true));
 
                 ModNetworking.syncQuestProgress(player, progress);
             }
@@ -460,7 +531,6 @@ public class OneBlockTickHandler {
 
         state.markDirty();
 
-        // Server-wide announcement
         server.getPlayerManager().broadcast(
                 Text.literal("\u2605 " + team.getTeamName() + "'s islands are now connected! They advanced to Phase "
                         + finalTargetPhase + "! \u2605")

@@ -27,6 +27,14 @@ public class ModBlocks {
                     .strength(0.5f)
                     .sounds(BlockSoundGroup.STONE)));
 
+    public static final Block TELEPORTER_BLOCK = registerBlock("teleporter_block",
+            new TeleporterBlock(AbstractBlock.Settings.create()
+                    .registryKey(RegistryKey.of(RegistryKeys.BLOCK,
+                            Identifier.of(OneBlockMod.MOD_ID, "teleporter_block")))
+                    .strength(2.0f)
+                    .luminance(state -> 8)
+                    .sounds(BlockSoundGroup.AMETHYST_BLOCK)));
+
     private static Block registerBlock(String name, Block block) {
         // Register the block item with its own registry key
         RegistryKey<Item> itemKey = RegistryKey.of(RegistryKeys.ITEM,

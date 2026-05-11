@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "": { "model": "oneblocktoendall:block/teleporter_block" }
+    }
+}

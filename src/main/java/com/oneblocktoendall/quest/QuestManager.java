@@ -1,12 +1,15 @@
 package com.oneblocktoendall.quest;
 
 import com.oneblocktoendall.OneBlockMod;
+import com.oneblocktoendall.data.OneBlockWorldState;
 import com.oneblocktoendall.phase.Phase;
 import com.oneblocktoendall.phase.PhaseManager;
+import com.oneblocktoendall.team.Team;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
@@ -157,5 +160,119 @@ public class QuestManager {
             }
         }
         return count;
+    }
+
+    /**
+     * Check alliance quests for a player (individual tracking, each member must complete).
+     * Returns newly completed quest IDs.
+     */
+    public static List<String> checkAllianceQuests(ServerPlayerEntity player,
+                                                    PlayerProgress progress) {
+        Phase phase = PhaseManager.getPhase(progress.getCurrentPhase());
+        if (phase == null) return Collections.emptyList();
+
+        List<String> newlyCompleted = new ArrayList<>();
+        for (Quest quest : phase.allianceQuests()) {
+            if (progress.isQuestCompleted(quest.id())) continue;
+
+            if (!progress.hasBaseline(quest.id())) {
+                progress.setBaseline(quest.id(), getCurrentStatValue(player, quest));
+            }
+
+            int progressValue;
+            if (quest.type() == QuestType.OBTAIN_ITEM) {
+                progressValue = countItemInInventory(player, quest.target());
+            } else {
+                progressValue = getCurrentStatValue(player, quest) - progress.getBaseline(quest.id());
+            }
+
+            if (progressValue >= quest.count()) {
+                progress.completeQuest(quest.id());
+                newlyCompleted.add(quest.id());
+            }
+        }
+        return newlyCompleted;
+    }
+
+    /**
+     * Get co-op quest progress by summing individual progress across all team members.
+     */
+    public static int getCoopQuestProgress(MinecraftServer server, Quest quest,
+                                            Team team, OneBlockWorldState state) {
+        int total = 0;
+        for (UUID memberId : team.getMembers()) {
+            PlayerProgress memberProgress = state.getProgress(memberId);
+            if (memberProgress == null || !memberProgress.isStarted()) continue;
+
+            ServerPlayerEntity memberPlayer = server.getPlayerManager().getPlayer(memberId);
+            if (memberPlayer == null) continue;
+
+            if (quest.type() == QuestType.OBTAIN_ITEM) {
+                total += countItemInInventory(memberPlayer, quest.target());
+            } else {
+                if (!memberProgress.hasBaseline(quest.id())) {
+                    memberProgress.setBaseline(quest.id(), getCurrentStatValue(memberPlayer, quest));
+                }
+                total += getCurrentStatValue(memberPlayer, quest) - memberProgress.getBaseline(quest.id());
+            }
+        }
+        return total;
+    }
+
+    /**
+     * Check co-op quests for a team. Returns newly completed quest IDs.
+     * Marks the quest complete for ALL team members when the team total is reached.
+     */
+    public static List<String> checkCoopQuests(MinecraftServer server, Team team,
+                                                OneBlockWorldState state, int currentPhase) {
+        Phase phase = PhaseManager.getPhase(currentPhase);
+        if (phase == null) return Collections.emptyList();
+
+        List<String> newlyCompleted = new ArrayList<>();
+        for (Quest quest : phase.coopQuests()) {
+            // Skip if already completed by the whole team (check leader as proxy)
+            boolean alreadyDone = team.getMembers().stream()
+                    .map(state::getProgress)
+                    .filter(Objects::nonNull)
+                    .allMatch(p -> p.isQuestCompleted(quest.id()));
+            if (alreadyDone) continue;
+
+            int teamTotal = getCoopQuestProgress(server, quest, team, state);
+            if (teamTotal >= quest.count()) {
+                for (UUID memberId : team.getMembers()) {
+                    PlayerProgress mp = state.getProgress(memberId);
+                    if (mp != null && !mp.isQuestCompleted(quest.id())) {
+                        mp.completeQuest(quest.id());
+                    }
+                }
+                newlyCompleted.add(quest.id());
+            }
+        }
+        return newlyCompleted;
+    }
+
+    /**
+     * Check if all quests in the current phase are done, including team quests
+     * if the player is in a merged team.
+     */
+    public static boolean isPhaseComplete(PlayerProgress progress, Team mergedTeam,
+                                           OneBlockWorldState state) {
+        if (!isPhaseComplete(progress)) return false;
+        if (mergedTeam == null) return true;
+
+        Phase phase = PhaseManager.getPhase(progress.getCurrentPhase());
+        if (phase == null) return true;
+
+        // Alliance quests: this player must have completed them individually
+        for (Quest quest : phase.allianceQuests()) {
+            if (!progress.isQuestCompleted(quest.id())) return false;
+        }
+
+        // Co-op quests: marked complete on all members when team total is reached
+        for (Quest quest : phase.coopQuests()) {
+            if (!progress.isQuestCompleted(quest.id())) return false;
+        }
+
+        return true;
     }
 }

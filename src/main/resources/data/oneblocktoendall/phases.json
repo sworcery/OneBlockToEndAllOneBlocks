@@ -6,18 +6,48 @@
             "displayBlock": "minecraft:grass_block",
             "mobSpawnChance": 0.03,
             "blockPool": [
-                {"item": "minecraft:dirt", "weight": 25},
-                {"item": "minecraft:oak_log", "weight": 20},
-                {"item": "minecraft:cobblestone", "weight": 20},
-                {"item": "minecraft:gravel", "weight": 10},
-                {"item": "minecraft:sand", "weight": 10},
-                {"item": "minecraft:clay_ball", "weight": 5},
-                {"item": "minecraft:oak_planks", "weight": 5},
-                {"item": "minecraft:stick", "weight": 5}
+                {
+                    "item": "minecraft:dirt",
+                    "weight": 25
+                },
+                {
+                    "item": "minecraft:oak_log",
+                    "weight": 20
+                },
+                {
+                    "item": "minecraft:cobblestone",
+                    "weight": 20
+                },
+                {
+                    "item": "minecraft:gravel",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:sand",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:clay_ball",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:oak_planks",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:stick",
+                    "weight": 5
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:chicken", "weight": 5},
-                {"entity": "minecraft:sheep", "weight": 3}
+                {
+                    "entity": "minecraft:chicken",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:sheep",
+                    "weight": 3
+                }
             ],
             "quests": [
                 {
@@ -52,6 +82,26 @@
                     "target": "minecraft:wooden_sword",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "survival_alliance_planks",
+                    "name": "Everyone Builds",
+                    "description": "Craft 16 oak planks",
+                    "type": "CRAFT_ITEM",
+                    "target": "minecraft:oak_planks",
+                    "count": 16
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "survival_coop_cobblestone",
+                    "name": "Foundation Stones",
+                    "description": "Mine 64 cobblestone as a team",
+                    "type": "MINE_BLOCK",
+                    "target": "minecraft:cobblestone",
+                    "count": 64
+                }
             ]
         },
         {
@@ -60,19 +110,52 @@
             "displayBlock": "minecraft:farmland",
             "mobSpawnChance": 0.04,
             "blockPool": [
-                {"item": "minecraft:wheat_seeds", "weight": 10},
-                {"item": "minecraft:beetroot_seeds", "weight": 5},
-                {"item": "minecraft:pumpkin_seeds", "weight": 3},
-                {"item": "minecraft:melon_seeds", "weight": 3},
-                {"item": "minecraft:sugar_cane", "weight": 5},
-                {"item": "minecraft:oak_sapling", "weight": 8},
-                {"item": "minecraft:birch_sapling", "weight": 5},
-                {"item": "minecraft:bone_meal", "weight": 8},
-                {"item": "minecraft:wheat", "weight": 8}
+                {
+                    "item": "minecraft:wheat_seeds",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:beetroot_seeds",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:pumpkin_seeds",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:melon_seeds",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:sugar_cane",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:oak_sapling",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:birch_sapling",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:bone_meal",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:wheat",
+                    "weight": 8
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:cow", "weight": 5},
-                {"entity": "minecraft:pig", "weight": 5}
+                {
+                    "entity": "minecraft:cow",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:pig",
+                    "weight": 5
+                }
             ],
             "quests": [
                 {
@@ -107,6 +190,26 @@
                     "target": "minecraft:chest",
                     "count": 2
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "farming_alliance_wheat",
+                    "name": "Personal Harvest",
+                    "description": "Obtain 16 wheat",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:wheat",
+                    "count": 16
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "farming_coop_breeding",
+                    "name": "Community Ranch",
+                    "description": "Breed animals 10 times as a team",
+                    "type": "CUSTOM_STAT",
+                    "target": "animals_bred",
+                    "count": 10
+                }
             ]
         },
         {
@@ -115,19 +218,52 @@
             "displayBlock": "minecraft:stone",
             "mobSpawnChance": 0.02,
             "blockPool": [
-                {"item": "minecraft:coal", "weight": 15},
-                {"item": "minecraft:raw_iron", "weight": 12},
-                {"item": "minecraft:raw_copper", "weight": 10},
-                {"item": "minecraft:raw_gold", "weight": 5},
-                {"item": "minecraft:lapis_lazuli", "weight": 5},
-                {"item": "minecraft:redstone", "weight": 8},
-                {"item": "minecraft:diamond", "weight": 2},
-                {"item": "minecraft:stone", "weight": 15},
-                {"item": "minecraft:deepslate", "weight": 10},
-                {"item": "minecraft:iron_ore", "weight": 8}
+                {
+                    "item": "minecraft:coal",
+                    "weight": 15
+                },
+                {
+                    "item": "minecraft:raw_iron",
+                    "weight": 12
+                },
+                {
+                    "item": "minecraft:raw_copper",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:raw_gold",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:lapis_lazuli",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:redstone",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:diamond",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:stone",
+                    "weight": 15
+                },
+                {
+                    "item": "minecraft:deepslate",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:iron_ore",
+                    "weight": 8
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:bat", "weight": 5}
+                {
+                    "entity": "minecraft:bat",
+                    "weight": 5
+                }
             ],
             "quests": [
                 {
@@ -162,6 +298,26 @@
                     "target": "minecraft:bucket",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "mining_alliance_iron",
+                    "name": "Iron Prospector",
+                    "description": "Obtain 8 iron ingots",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:iron_ingot",
+                    "count": 8
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "mining_coop_ores",
+                    "name": "Strip Mine",
+                    "description": "Mine 128 stone as a team",
+                    "type": "MINE_BLOCK",
+                    "target": "minecraft:stone",
+                    "count": 128
+                }
             ]
         },
         {
@@ -170,22 +326,64 @@
             "displayBlock": "minecraft:prismarine",
             "mobSpawnChance": 0.05,
             "blockPool": [
-                {"item": "minecraft:prismarine_shard", "weight": 12},
-                {"item": "minecraft:prismarine_crystals", "weight": 8},
-                {"item": "minecraft:kelp", "weight": 10},
-                {"item": "minecraft:sea_lantern", "weight": 3},
-                {"item": "minecraft:cod", "weight": 8},
-                {"item": "minecraft:salmon", "weight": 6},
-                {"item": "minecraft:tropical_fish", "weight": 4},
-                {"item": "minecraft:nautilus_shell", "weight": 2},
-                {"item": "minecraft:heart_of_the_sea", "weight": 1},
-                {"item": "minecraft:sponge", "weight": 3},
-                {"item": "minecraft:water_bucket", "weight": 5}
+                {
+                    "item": "minecraft:prismarine_shard",
+                    "weight": 12
+                },
+                {
+                    "item": "minecraft:prismarine_crystals",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:kelp",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:sea_lantern",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:cod",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:salmon",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:tropical_fish",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:nautilus_shell",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:heart_of_the_sea",
+                    "weight": 1
+                },
+                {
+                    "item": "minecraft:sponge",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:water_bucket",
+                    "weight": 5
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:squid", "weight": 5},
-                {"entity": "minecraft:dolphin", "weight": 3},
-                {"entity": "minecraft:drowned", "weight": 4}
+                {
+                    "entity": "minecraft:squid",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:dolphin",
+                    "weight": 3
+                },
+                {
+                    "entity": "minecraft:drowned",
+                    "weight": 4
+                }
             ],
             "quests": [
                 {
@@ -220,29 +418,88 @@
                     "target": "minecraft:prismarine_shard",
                     "count": 8
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "ocean_alliance_fishing",
+                    "name": "Angler's Duty",
+                    "description": "Catch 3 fish",
+                    "type": "CUSTOM_STAT",
+                    "target": "fish_caught",
+                    "count": 3
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "ocean_coop_drowned",
+                    "name": "Tide Breakers",
+                    "description": "Kill 20 drowned as a team",
+                    "type": "KILL_ENTITY",
+                    "target": "minecraft:drowned",
+                    "count": 20
+                }
             ]
         },
         {
             "id": 5,
             "name": "Combat",
             "displayBlock": "minecraft:mossy_cobblestone",
-            "mobSpawnChance": 0.10,
+            "mobSpawnChance": 0.1,
             "blockPool": [
-                {"item": "minecraft:obsidian", "weight": 5},
-                {"item": "minecraft:tnt", "weight": 2},
-                {"item": "minecraft:experience_bottle", "weight": 5},
-                {"item": "minecraft:bookshelf", "weight": 5},
-                {"item": "minecraft:enchanting_table", "weight": 1},
-                {"item": "minecraft:anvil", "weight": 2},
-                {"item": "minecraft:diamond", "weight": 3},
-                {"item": "minecraft:arrow", "weight": 8},
-                {"item": "minecraft:bone", "weight": 6}
+                {
+                    "item": "minecraft:obsidian",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:tnt",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:experience_bottle",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:bookshelf",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:enchanting_table",
+                    "weight": 1
+                },
+                {
+                    "item": "minecraft:anvil",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:diamond",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:arrow",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:bone",
+                    "weight": 6
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:zombie", "weight": 10},
-                {"entity": "minecraft:skeleton", "weight": 8},
-                {"entity": "minecraft:creeper", "weight": 5},
-                {"entity": "minecraft:spider", "weight": 7}
+                {
+                    "entity": "minecraft:zombie",
+                    "weight": 10
+                },
+                {
+                    "entity": "minecraft:skeleton",
+                    "weight": 8
+                },
+                {
+                    "entity": "minecraft:creeper",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:spider",
+                    "weight": 7
+                }
             ],
             "quests": [
                 {
@@ -277,6 +534,26 @@
                     "target": "enchant_item",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "combat_alliance_bow",
+                    "name": "Armed to the Teeth",
+                    "description": "Craft a bow",
+                    "type": "CRAFT_ITEM",
+                    "target": "minecraft:bow",
+                    "count": 1
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "combat_coop_mob_kills",
+                    "name": "Kill Squad",
+                    "description": "Kill 50 hostile mobs as a team",
+                    "type": "CUSTOM_STAT",
+                    "target": "mob_kills",
+                    "count": 50
+                }
             ]
         },
         {
@@ -285,22 +562,64 @@
             "displayBlock": "minecraft:redstone_block",
             "mobSpawnChance": 0.04,
             "blockPool": [
-                {"item": "minecraft:redstone", "weight": 15},
-                {"item": "minecraft:redstone_block", "weight": 3},
-                {"item": "minecraft:repeater", "weight": 5},
-                {"item": "minecraft:comparator", "weight": 4},
-                {"item": "minecraft:piston", "weight": 4},
-                {"item": "minecraft:sticky_piston", "weight": 3},
-                {"item": "minecraft:observer", "weight": 3},
-                {"item": "minecraft:hopper", "weight": 4},
-                {"item": "minecraft:dropper", "weight": 4},
-                {"item": "minecraft:dispenser", "weight": 4},
-                {"item": "minecraft:lever", "weight": 5},
-                {"item": "minecraft:redstone_torch", "weight": 6}
+                {
+                    "item": "minecraft:redstone",
+                    "weight": 15
+                },
+                {
+                    "item": "minecraft:redstone_block",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:repeater",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:comparator",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:piston",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:sticky_piston",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:observer",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:hopper",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:dropper",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:dispenser",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:lever",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:redstone_torch",
+                    "weight": 6
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:iron_golem", "weight": 1},
-                {"entity": "minecraft:witch", "weight": 5}
+                {
+                    "entity": "minecraft:iron_golem",
+                    "weight": 1
+                },
+                {
+                    "entity": "minecraft:witch",
+                    "weight": 5
+                }
             ],
             "quests": [
                 {
@@ -335,6 +654,26 @@
                     "target": "minecraft:dispenser",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "redstone_alliance_repeater",
+                    "name": "Signal Relay",
+                    "description": "Craft 4 repeaters",
+                    "type": "CRAFT_ITEM",
+                    "target": "minecraft:repeater",
+                    "count": 4
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "redstone_coop_redstone",
+                    "name": "Power Grid",
+                    "description": "Obtain 128 redstone dust as a team",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:redstone",
+                    "count": 128
+                }
             ]
         },
         {
@@ -343,23 +682,68 @@
             "displayBlock": "minecraft:emerald_block",
             "mobSpawnChance": 0.06,
             "blockPool": [
-                {"item": "minecraft:emerald", "weight": 8},
-                {"item": "minecraft:bell", "weight": 1},
-                {"item": "minecraft:lantern", "weight": 6},
-                {"item": "minecraft:hay_block", "weight": 8},
-                {"item": "minecraft:barrel", "weight": 5},
-                {"item": "minecraft:lectern", "weight": 3},
-                {"item": "minecraft:loom", "weight": 3},
-                {"item": "minecraft:smithing_table", "weight": 3},
-                {"item": "minecraft:fletching_table", "weight": 3},
-                {"item": "minecraft:composter", "weight": 4},
-                {"item": "minecraft:crossbow", "weight": 2}
+                {
+                    "item": "minecraft:emerald",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:bell",
+                    "weight": 1
+                },
+                {
+                    "item": "minecraft:lantern",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:hay_block",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:barrel",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:lectern",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:loom",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:smithing_table",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:fletching_table",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:composter",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:crossbow",
+                    "weight": 2
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:villager", "weight": 5},
-                {"entity": "minecraft:wandering_trader", "weight": 2},
-                {"entity": "minecraft:pillager", "weight": 4},
-                {"entity": "minecraft:vindicator", "weight": 3}
+                {
+                    "entity": "minecraft:villager",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:wandering_trader",
+                    "weight": 2
+                },
+                {
+                    "entity": "minecraft:pillager",
+                    "weight": 4
+                },
+                {
+                    "entity": "minecraft:vindicator",
+                    "weight": 3
+                }
             ],
             "quests": [
                 {
@@ -394,6 +778,26 @@
                     "target": "minecraft:lectern",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "village_alliance_trading",
+                    "name": "Local Merchant",
+                    "description": "Trade with villagers 3 times",
+                    "type": "CUSTOM_STAT",
+                    "target": "traded_with_villager",
+                    "count": 3
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "village_coop_emeralds",
+                    "name": "Village Treasury",
+                    "description": "Obtain 32 emeralds as a team",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:emerald",
+                    "count": 32
+                }
             ]
         },
         {
@@ -402,21 +806,60 @@
             "displayBlock": "minecraft:netherrack",
             "mobSpawnChance": 0.08,
             "blockPool": [
-                {"item": "minecraft:netherrack", "weight": 15},
-                {"item": "minecraft:soul_sand", "weight": 8},
-                {"item": "minecraft:nether_bricks", "weight": 8},
-                {"item": "minecraft:quartz", "weight": 10},
-                {"item": "minecraft:glowstone_dust", "weight": 8},
-                {"item": "minecraft:magma_block", "weight": 5},
-                {"item": "minecraft:nether_wart", "weight": 5},
-                {"item": "minecraft:gold_ingot", "weight": 5},
-                {"item": "minecraft:blaze_rod", "weight": 3}
+                {
+                    "item": "minecraft:netherrack",
+                    "weight": 15
+                },
+                {
+                    "item": "minecraft:soul_sand",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:nether_bricks",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:quartz",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:glowstone_dust",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:magma_block",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:nether_wart",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:gold_ingot",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:blaze_rod",
+                    "weight": 3
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:blaze", "weight": 8},
-                {"entity": "minecraft:zombified_piglin", "weight": 10},
-                {"entity": "minecraft:magma_cube", "weight": 5},
-                {"entity": "minecraft:ghast", "weight": 2}
+                {
+                    "entity": "minecraft:blaze",
+                    "weight": 8
+                },
+                {
+                    "entity": "minecraft:zombified_piglin",
+                    "weight": 10
+                },
+                {
+                    "entity": "minecraft:magma_cube",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:ghast",
+                    "weight": 2
+                }
             ],
             "quests": [
                 {
@@ -451,6 +894,26 @@
                     "target": "minecraft:golden_boots",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "nether_alliance_blaze_rods",
+                    "name": "Flame Harvester",
+                    "description": "Obtain 4 blaze rods",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:blaze_rod",
+                    "count": 4
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "nether_coop_ghasts",
+                    "name": "Ghostbusters",
+                    "description": "Kill 8 ghasts as a team",
+                    "type": "KILL_ENTITY",
+                    "target": "minecraft:ghast",
+                    "count": 8
+                }
             ]
         },
         {
@@ -459,21 +922,60 @@
             "displayBlock": "minecraft:sculk",
             "mobSpawnChance": 0.06,
             "blockPool": [
-                {"item": "minecraft:sculk", "weight": 12},
-                {"item": "minecraft:sculk_sensor", "weight": 4},
-                {"item": "minecraft:sculk_catalyst", "weight": 3},
-                {"item": "minecraft:deepslate", "weight": 12},
-                {"item": "minecraft:tuff", "weight": 8},
-                {"item": "minecraft:echo_shard", "weight": 3},
-                {"item": "minecraft:amethyst_shard", "weight": 6},
-                {"item": "minecraft:calcite", "weight": 5},
-                {"item": "minecraft:candle", "weight": 4},
-                {"item": "minecraft:glow_berries", "weight": 5}
+                {
+                    "item": "minecraft:sculk",
+                    "weight": 12
+                },
+                {
+                    "item": "minecraft:sculk_sensor",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:sculk_catalyst",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:deepslate",
+                    "weight": 12
+                },
+                {
+                    "item": "minecraft:tuff",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:echo_shard",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:amethyst_shard",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:calcite",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:candle",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:glow_berries",
+                    "weight": 5
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:warden", "weight": 1},
-                {"entity": "minecraft:cave_spider", "weight": 6},
-                {"entity": "minecraft:silverfish", "weight": 4}
+                {
+                    "entity": "minecraft:warden",
+                    "weight": 1
+                },
+                {
+                    "entity": "minecraft:cave_spider",
+                    "weight": 6
+                },
+                {
+                    "entity": "minecraft:silverfish",
+                    "weight": 4
+                }
             ],
             "quests": [
                 {
@@ -508,6 +1010,26 @@
                     "target": "minecraft:deepslate",
                     "count": 20
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "deepdark_alliance_sculk",
+                    "name": "Sculk Harvester",
+                    "description": "Mine 10 sculk blocks",
+                    "type": "MINE_BLOCK",
+                    "target": "minecraft:sculk",
+                    "count": 10
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "deepdark_coop_deepslate",
+                    "name": "Excavation Crew",
+                    "description": "Mine 128 deepslate as a team",
+                    "type": "MINE_BLOCK",
+                    "target": "minecraft:deepslate",
+                    "count": 128
+                }
             ]
         },
         {
@@ -516,19 +1038,52 @@
             "displayBlock": "minecraft:end_stone",
             "mobSpawnChance": 0.08,
             "blockPool": [
-                {"item": "minecraft:end_stone", "weight": 15},
-                {"item": "minecraft:purpur_block", "weight": 10},
-                {"item": "minecraft:chorus_fruit", "weight": 8},
-                {"item": "minecraft:ender_pearl", "weight": 8},
-                {"item": "minecraft:obsidian", "weight": 8},
-                {"item": "minecraft:shulker_shell", "weight": 3},
-                {"item": "minecraft:elytra", "weight": 1},
-                {"item": "minecraft:dragon_breath", "weight": 2}
+                {
+                    "item": "minecraft:end_stone",
+                    "weight": 15
+                },
+                {
+                    "item": "minecraft:purpur_block",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:chorus_fruit",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:ender_pearl",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:obsidian",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:shulker_shell",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:elytra",
+                    "weight": 1
+                },
+                {
+                    "item": "minecraft:dragon_breath",
+                    "weight": 2
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:enderman", "weight": 10},
-                {"entity": "minecraft:shulker", "weight": 3},
-                {"entity": "minecraft:endermite", "weight": 5}
+                {
+                    "entity": "minecraft:enderman",
+                    "weight": 10
+                },
+                {
+                    "entity": "minecraft:shulker",
+                    "weight": 3
+                },
+                {
+                    "entity": "minecraft:endermite",
+                    "weight": 5
+                }
             ],
             "quests": [
                 {
@@ -563,6 +1118,26 @@
                     "target": "minecraft:shulker_box",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "end_alliance_endermen",
+                    "name": "Void Hunter",
+                    "description": "Kill 8 endermen",
+                    "type": "KILL_ENTITY",
+                    "target": "minecraft:enderman",
+                    "count": 8
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "end_coop_pearls",
+                    "name": "Pearl Stockpile",
+                    "description": "Obtain 32 ender pearls as a team",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:ender_pearl",
+                    "count": 32
+                }
             ]
         },
         {
@@ -571,23 +1146,68 @@
             "displayBlock": "minecraft:spruce_log",
             "mobSpawnChance": 0.04,
             "blockPool": [
-                {"item": "minecraft:spruce_log", "weight": 12},
-                {"item": "minecraft:birch_log", "weight": 10},
-                {"item": "minecraft:jungle_log", "weight": 8},
-                {"item": "minecraft:acacia_log", "weight": 8},
-                {"item": "minecraft:dark_oak_log", "weight": 8},
-                {"item": "minecraft:spruce_sapling", "weight": 5},
-                {"item": "minecraft:jungle_sapling", "weight": 4},
-                {"item": "minecraft:dark_oak_sapling", "weight": 4},
-                {"item": "minecraft:apple", "weight": 6},
-                {"item": "minecraft:vine", "weight": 5},
-                {"item": "minecraft:charcoal", "weight": 6},
-                {"item": "minecraft:moss_block", "weight": 4}
+                {
+                    "item": "minecraft:spruce_log",
+                    "weight": 12
+                },
+                {
+                    "item": "minecraft:birch_log",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:jungle_log",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:acacia_log",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:dark_oak_log",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:spruce_sapling",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:jungle_sapling",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:dark_oak_sapling",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:apple",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:vine",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:charcoal",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:moss_block",
+                    "weight": 4
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:fox", "weight": 5},
-                {"entity": "minecraft:wolf", "weight": 4},
-                {"entity": "minecraft:ocelot", "weight": 3}
+                {
+                    "entity": "minecraft:fox",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:wolf",
+                    "weight": 4
+                },
+                {
+                    "entity": "minecraft:ocelot",
+                    "weight": 3
+                }
             ],
             "quests": [
                 {
@@ -622,6 +1242,26 @@
                     "target": "minecraft:wolf",
                     "count": 3
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "forestry_alliance_logs",
+                    "name": "Timber Quota",
+                    "description": "Mine 24 oak logs",
+                    "type": "MINE_BLOCK",
+                    "target": "minecraft:oak_log",
+                    "count": 24
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "forestry_coop_saplings",
+                    "name": "Reforestation",
+                    "description": "Obtain 32 saplings as a team",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:oak_sapling",
+                    "count": 32
+                }
             ]
         },
         {
@@ -630,22 +1270,64 @@
             "displayBlock": "minecraft:sandstone",
             "mobSpawnChance": 0.05,
             "blockPool": [
-                {"item": "minecraft:sandstone", "weight": 12},
-                {"item": "minecraft:red_sand", "weight": 8},
-                {"item": "minecraft:cactus", "weight": 6},
-                {"item": "minecraft:dead_bush", "weight": 4},
-                {"item": "minecraft:terracotta", "weight": 8},
-                {"item": "minecraft:red_terracotta", "weight": 5},
-                {"item": "minecraft:orange_terracotta", "weight": 5},
-                {"item": "minecraft:yellow_terracotta", "weight": 5},
-                {"item": "minecraft:bone_block", "weight": 4},
-                {"item": "minecraft:string", "weight": 6},
-                {"item": "minecraft:gunpowder", "weight": 5}
+                {
+                    "item": "minecraft:sandstone",
+                    "weight": 12
+                },
+                {
+                    "item": "minecraft:red_sand",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:cactus",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:dead_bush",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:terracotta",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:red_terracotta",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:orange_terracotta",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:yellow_terracotta",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:bone_block",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:string",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:gunpowder",
+                    "weight": 5
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:husk", "weight": 6},
-                {"entity": "minecraft:rabbit", "weight": 4},
-                {"entity": "minecraft:spider", "weight": 3}
+                {
+                    "entity": "minecraft:husk",
+                    "weight": 6
+                },
+                {
+                    "entity": "minecraft:rabbit",
+                    "weight": 4
+                },
+                {
+                    "entity": "minecraft:spider",
+                    "weight": 3
+                }
             ],
             "quests": [
                 {
@@ -680,6 +1362,26 @@
                     "target": "minecraft:tnt",
                     "count": 3
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "desert_alliance_terracotta",
+                    "name": "Desert Collector",
+                    "description": "Obtain 16 terracotta",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:terracotta",
+                    "count": 16
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "desert_coop_husks",
+                    "name": "Sunscorched Hunt",
+                    "description": "Kill 30 husks as a team",
+                    "type": "KILL_ENTITY",
+                    "target": "minecraft:husk",
+                    "count": 30
+                }
             ]
         },
         {
@@ -688,22 +1390,64 @@
             "displayBlock": "minecraft:packed_ice",
             "mobSpawnChance": 0.05,
             "blockPool": [
-                {"item": "minecraft:snow_block", "weight": 12},
-                {"item": "minecraft:ice", "weight": 8},
-                {"item": "minecraft:packed_ice", "weight": 6},
-                {"item": "minecraft:blue_ice", "weight": 3},
-                {"item": "minecraft:powder_snow_bucket", "weight": 2},
-                {"item": "minecraft:spruce_planks", "weight": 8},
-                {"item": "minecraft:white_wool", "weight": 6},
-                {"item": "minecraft:sweet_berries", "weight": 5},
-                {"item": "minecraft:fern", "weight": 4},
-                {"item": "minecraft:leather", "weight": 5},
-                {"item": "minecraft:egg", "weight": 4}
+                {
+                    "item": "minecraft:snow_block",
+                    "weight": 12
+                },
+                {
+                    "item": "minecraft:ice",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:packed_ice",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:blue_ice",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:powder_snow_bucket",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:spruce_planks",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:white_wool",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:sweet_berries",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:fern",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:leather",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:egg",
+                    "weight": 4
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:polar_bear", "weight": 3},
-                {"entity": "minecraft:stray", "weight": 5},
-                {"entity": "minecraft:snow_golem", "weight": 2}
+                {
+                    "entity": "minecraft:polar_bear",
+                    "weight": 3
+                },
+                {
+                    "entity": "minecraft:stray",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:snow_golem",
+                    "weight": 2
+                }
             ],
             "quests": [
                 {
@@ -738,6 +1482,26 @@
                     "target": "minecraft:cake",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "snowy_alliance_snowballs",
+                    "name": "Snowball Fight",
+                    "description": "Obtain 32 snowballs",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:snowball",
+                    "count": 32
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "snowy_coop_strays",
+                    "name": "Frozen Patrol",
+                    "description": "Kill 20 strays as a team",
+                    "type": "KILL_ENTITY",
+                    "target": "minecraft:stray",
+                    "count": 20
+                }
             ]
         },
         {
@@ -746,23 +1510,68 @@
             "displayBlock": "minecraft:bricks",
             "mobSpawnChance": 0.03,
             "blockPool": [
-                {"item": "minecraft:bricks", "weight": 10},
-                {"item": "minecraft:stone_bricks", "weight": 10},
-                {"item": "minecraft:polished_granite", "weight": 6},
-                {"item": "minecraft:polished_diorite", "weight": 6},
-                {"item": "minecraft:polished_andesite", "weight": 6},
-                {"item": "minecraft:quartz_block", "weight": 5},
-                {"item": "minecraft:glass_pane", "weight": 6},
-                {"item": "minecraft:iron_bars", "weight": 4},
-                {"item": "minecraft:ladder", "weight": 5},
-                {"item": "minecraft:flower_pot", "weight": 3},
-                {"item": "minecraft:smooth_stone", "weight": 6},
-                {"item": "minecraft:brick", "weight": 8}
+                {
+                    "item": "minecraft:bricks",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:stone_bricks",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:polished_granite",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:polished_diorite",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:polished_andesite",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:quartz_block",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:glass_pane",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:iron_bars",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:ladder",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:flower_pot",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:smooth_stone",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:brick",
+                    "weight": 8
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:cat", "weight": 3},
-                {"entity": "minecraft:parrot", "weight": 2},
-                {"entity": "minecraft:allay", "weight": 1}
+                {
+                    "entity": "minecraft:cat",
+                    "weight": 3
+                },
+                {
+                    "entity": "minecraft:parrot",
+                    "weight": 2
+                },
+                {
+                    "entity": "minecraft:allay",
+                    "weight": 1
+                }
             ],
             "quests": [
                 {
@@ -797,6 +1606,26 @@
                     "target": "minecraft:iron_door",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "arch_alliance_stone_bricks",
+                    "name": "Mason's Mark",
+                    "description": "Craft 32 stone bricks",
+                    "type": "CRAFT_ITEM",
+                    "target": "minecraft:stone_bricks",
+                    "count": 32
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "arch_coop_bricks",
+                    "name": "Construction Crew",
+                    "description": "Obtain 128 bricks as a team",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:brick",
+                    "count": 128
+                }
             ]
         },
         {
@@ -805,23 +1634,68 @@
             "displayBlock": "minecraft:crying_obsidian",
             "mobSpawnChance": 0.06,
             "blockPool": [
-                {"item": "minecraft:glass_bottle", "weight": 8},
-                {"item": "minecraft:nether_wart", "weight": 6},
-                {"item": "minecraft:spider_eye", "weight": 6},
-                {"item": "minecraft:blaze_powder", "weight": 5},
-                {"item": "minecraft:magma_cream", "weight": 4},
-                {"item": "minecraft:ghast_tear", "weight": 3},
-                {"item": "minecraft:sugar", "weight": 6},
-                {"item": "minecraft:glistering_melon_slice", "weight": 4},
-                {"item": "minecraft:rabbit_foot", "weight": 3},
-                {"item": "minecraft:phantom_membrane", "weight": 3},
-                {"item": "minecraft:brown_mushroom", "weight": 5},
-                {"item": "minecraft:golden_apple", "weight": 2}
+                {
+                    "item": "minecraft:glass_bottle",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:nether_wart",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:spider_eye",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:blaze_powder",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:magma_cream",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:ghast_tear",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:sugar",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:glistering_melon_slice",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:rabbit_foot",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:phantom_membrane",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:brown_mushroom",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:golden_apple",
+                    "weight": 2
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:phantom", "weight": 4},
-                {"entity": "minecraft:witch", "weight": 5},
-                {"entity": "minecraft:slime", "weight": 5}
+                {
+                    "entity": "minecraft:phantom",
+                    "weight": 4
+                },
+                {
+                    "entity": "minecraft:witch",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:slime",
+                    "weight": 5
+                }
             ],
             "quests": [
                 {
@@ -856,6 +1730,26 @@
                     "target": "minecraft:golden_apple",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "alchemy_alliance_brewing",
+                    "name": "Potion Brewer",
+                    "description": "Use the brewing stand 3 times",
+                    "type": "CUSTOM_STAT",
+                    "target": "interact_with_brewingstand",
+                    "count": 3
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "alchemy_coop_witches",
+                    "name": "Witch Purge",
+                    "description": "Kill 15 witches as a team",
+                    "type": "KILL_ENTITY",
+                    "target": "minecraft:witch",
+                    "count": 15
+                }
             ]
         },
         {
@@ -864,23 +1758,68 @@
             "displayBlock": "minecraft:note_block",
             "mobSpawnChance": 0.04,
             "blockPool": [
-                {"item": "minecraft:note_block", "weight": 6},
-                {"item": "minecraft:jukebox", "weight": 2},
-                {"item": "minecraft:white_dye", "weight": 5},
-                {"item": "minecraft:red_dye", "weight": 5},
-                {"item": "minecraft:blue_dye", "weight": 5},
-                {"item": "minecraft:green_dye", "weight": 5},
-                {"item": "minecraft:yellow_dye", "weight": 5},
-                {"item": "minecraft:purple_dye", "weight": 4},
-                {"item": "minecraft:orange_dye", "weight": 4},
-                {"item": "minecraft:white_wool", "weight": 8},
-                {"item": "minecraft:white_carpet", "weight": 4},
-                {"item": "minecraft:white_banner", "weight": 3}
+                {
+                    "item": "minecraft:note_block",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:jukebox",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:white_dye",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:red_dye",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:blue_dye",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:green_dye",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:yellow_dye",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:purple_dye",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:orange_dye",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:white_wool",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:white_carpet",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:white_banner",
+                    "weight": 3
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:sheep", "weight": 5},
-                {"entity": "minecraft:parrot", "weight": 3},
-                {"entity": "minecraft:allay", "weight": 2}
+                {
+                    "entity": "minecraft:sheep",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:parrot",
+                    "weight": 3
+                },
+                {
+                    "entity": "minecraft:allay",
+                    "weight": 2
+                }
             ],
             "quests": [
                 {
@@ -915,6 +1854,26 @@
                     "target": "minecraft:white_banner",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "dye_alliance_wool",
+                    "name": "Dye Artist",
+                    "description": "Obtain 8 white wool",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:white_wool",
+                    "count": 8
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "dye_coop_noteblocks",
+                    "name": "Orchestra",
+                    "description": "Play note blocks 50 times as a team",
+                    "type": "CUSTOM_STAT",
+                    "target": "play_noteblock",
+                    "count": 50
+                }
             ]
         },
         {
@@ -923,22 +1882,64 @@
             "displayBlock": "minecraft:warped_nylium",
             "mobSpawnChance": 0.07,
             "blockPool": [
-                {"item": "minecraft:warped_stem", "weight": 10},
-                {"item": "minecraft:warped_planks", "weight": 8},
-                {"item": "minecraft:warped_fungus", "weight": 5},
-                {"item": "minecraft:shroomlight", "weight": 6},
-                {"item": "minecraft:nether_gold_ore", "weight": 5},
-                {"item": "minecraft:gilded_blackstone", "weight": 4},
-                {"item": "minecraft:crying_obsidian", "weight": 5},
-                {"item": "minecraft:chain", "weight": 4},
-                {"item": "minecraft:blackstone", "weight": 8},
-                {"item": "minecraft:glowstone", "weight": 6},
-                {"item": "minecraft:twisting_vines", "weight": 4}
+                {
+                    "item": "minecraft:warped_stem",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:warped_planks",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:warped_fungus",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:shroomlight",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:nether_gold_ore",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:gilded_blackstone",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:crying_obsidian",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:chain",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:blackstone",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:glowstone",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:twisting_vines",
+                    "weight": 4
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:hoglin", "weight": 5},
-                {"entity": "minecraft:piglin", "weight": 6},
-                {"entity": "minecraft:strider", "weight": 3}
+                {
+                    "entity": "minecraft:hoglin",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:piglin",
+                    "weight": 6
+                },
+                {
+                    "entity": "minecraft:strider",
+                    "weight": 3
+                }
             ],
             "quests": [
                 {
@@ -973,6 +1974,26 @@
                     "target": "minecraft:shroomlight",
                     "count": 8
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "warped_alliance_blackstone",
+                    "name": "Dark Builder",
+                    "description": "Obtain 16 blackstone",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:blackstone",
+                    "count": 16
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "warped_coop_piglins",
+                    "name": "Piglin Purge",
+                    "description": "Kill 25 piglins as a team",
+                    "type": "KILL_ENTITY",
+                    "target": "minecraft:piglin",
+                    "count": 25
+                }
             ]
         },
         {
@@ -981,22 +2002,64 @@
             "displayBlock": "minecraft:gilded_blackstone",
             "mobSpawnChance": 0.08,
             "blockPool": [
-                {"item": "minecraft:gilded_blackstone", "weight": 8},
-                {"item": "minecraft:blackstone", "weight": 10},
-                {"item": "minecraft:polished_blackstone_bricks", "weight": 8},
-                {"item": "minecraft:gold_block", "weight": 3},
-                {"item": "minecraft:netherite_scrap", "weight": 2},
-                {"item": "minecraft:ancient_debris", "weight": 1},
-                {"item": "minecraft:spectral_arrow", "weight": 5},
-                {"item": "minecraft:crossbow", "weight": 3},
-                {"item": "minecraft:golden_sword", "weight": 4},
-                {"item": "minecraft:golden_apple", "weight": 3},
-                {"item": "minecraft:gold_ingot", "weight": 8}
+                {
+                    "item": "minecraft:gilded_blackstone",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:blackstone",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:polished_blackstone_bricks",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:gold_block",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:netherite_scrap",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:ancient_debris",
+                    "weight": 1
+                },
+                {
+                    "item": "minecraft:spectral_arrow",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:crossbow",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:golden_sword",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:golden_apple",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:gold_ingot",
+                    "weight": 8
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:piglin_brute", "weight": 3},
-                {"entity": "minecraft:piglin", "weight": 6},
-                {"entity": "minecraft:zombified_piglin", "weight": 5}
+                {
+                    "entity": "minecraft:piglin_brute",
+                    "weight": 3
+                },
+                {
+                    "entity": "minecraft:piglin",
+                    "weight": 6
+                },
+                {
+                    "entity": "minecraft:zombified_piglin",
+                    "weight": 5
+                }
             ],
             "quests": [
                 {
@@ -1031,6 +2094,26 @@
                     "target": "minecraft:smithing_table",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "bastion_alliance_gold_blocks",
+                    "name": "Gold Standard",
+                    "description": "Obtain 4 gold blocks",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:gold_block",
+                    "count": 4
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "bastion_coop_brutes",
+                    "name": "Bastion Assault",
+                    "description": "Kill 10 piglin brutes as a team",
+                    "type": "KILL_ENTITY",
+                    "target": "minecraft:piglin_brute",
+                    "count": 10
+                }
             ]
         },
         {
@@ -1039,21 +2122,60 @@
             "displayBlock": "minecraft:soul_soil",
             "mobSpawnChance": 0.07,
             "blockPool": [
-                {"item": "minecraft:wither_skeleton_skull", "weight": 2},
-                {"item": "minecraft:soul_soil", "weight": 10},
-                {"item": "minecraft:soul_sand", "weight": 8},
-                {"item": "minecraft:soul_torch", "weight": 5},
-                {"item": "minecraft:bone_block", "weight": 6},
-                {"item": "minecraft:coal_block", "weight": 5},
-                {"item": "minecraft:nether_bricks", "weight": 8},
-                {"item": "minecraft:wither_rose", "weight": 3},
-                {"item": "minecraft:nether_star", "weight": 1},
-                {"item": "minecraft:beacon", "weight": 1}
+                {
+                    "item": "minecraft:wither_skeleton_skull",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:soul_soil",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:soul_sand",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:soul_torch",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:bone_block",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:coal_block",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:nether_bricks",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:wither_rose",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:nether_star",
+                    "weight": 1
+                },
+                {
+                    "item": "minecraft:beacon",
+                    "weight": 1
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:wither_skeleton", "weight": 6},
-                {"entity": "minecraft:blaze", "weight": 4},
-                {"entity": "minecraft:ghast", "weight": 3}
+                {
+                    "entity": "minecraft:wither_skeleton",
+                    "weight": 6
+                },
+                {
+                    "entity": "minecraft:blaze",
+                    "weight": 4
+                },
+                {
+                    "entity": "minecraft:ghast",
+                    "weight": 3
+                }
             ],
             "quests": [
                 {
@@ -1088,6 +2210,26 @@
                     "target": "minecraft:diamond_pickaxe",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "wither_alliance_wither_skeletons",
+                    "name": "Bone Reaper",
+                    "description": "Kill 5 wither skeletons",
+                    "type": "KILL_ENTITY",
+                    "target": "minecraft:wither_skeleton",
+                    "count": 5
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "wither_coop_soul_sand",
+                    "name": "Soul Harvest",
+                    "description": "Mine 64 soul sand as a team",
+                    "type": "MINE_BLOCK",
+                    "target": "minecraft:soul_sand",
+                    "count": 64
+                }
             ]
         },
         {
@@ -1096,21 +2238,60 @@
             "displayBlock": "minecraft:lapis_block",
             "mobSpawnChance": 0.05,
             "blockPool": [
-                {"item": "minecraft:lapis_lazuli", "weight": 10},
-                {"item": "minecraft:bookshelf", "weight": 8},
-                {"item": "minecraft:enchanting_table", "weight": 2},
-                {"item": "minecraft:experience_bottle", "weight": 8},
-                {"item": "minecraft:anvil", "weight": 3},
-                {"item": "minecraft:book", "weight": 8},
-                {"item": "minecraft:grindstone", "weight": 3},
-                {"item": "minecraft:diamond", "weight": 4},
-                {"item": "minecraft:amethyst_shard", "weight": 6},
-                {"item": "minecraft:iron_block", "weight": 5}
+                {
+                    "item": "minecraft:lapis_lazuli",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:bookshelf",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:enchanting_table",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:experience_bottle",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:anvil",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:book",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:grindstone",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:diamond",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:amethyst_shard",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:iron_block",
+                    "weight": 5
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:evoker", "weight": 3},
-                {"entity": "minecraft:vex", "weight": 5},
-                {"entity": "minecraft:phantom", "weight": 4}
+                {
+                    "entity": "minecraft:evoker",
+                    "weight": 3
+                },
+                {
+                    "entity": "minecraft:vex",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:phantom",
+                    "weight": 4
+                }
             ],
             "quests": [
                 {
@@ -1145,6 +2326,26 @@
                     "target": "mob_kills",
                     "count": 50
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "enchant_alliance_enchanting",
+                    "name": "Apprentice Enchanter",
+                    "description": "Enchant an item",
+                    "type": "CUSTOM_STAT",
+                    "target": "enchant_item",
+                    "count": 1
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "enchant_coop_xp",
+                    "name": "XP Farm",
+                    "description": "Kill 100 mobs as a team",
+                    "type": "CUSTOM_STAT",
+                    "target": "mob_kills",
+                    "count": 100
+                }
             ]
         },
         {
@@ -1153,22 +2354,64 @@
             "displayBlock": "minecraft:copper_block",
             "mobSpawnChance": 0.04,
             "blockPool": [
-                {"item": "minecraft:rail", "weight": 10},
-                {"item": "minecraft:powered_rail", "weight": 5},
-                {"item": "minecraft:detector_rail", "weight": 4},
-                {"item": "minecraft:activator_rail", "weight": 4},
-                {"item": "minecraft:minecart", "weight": 5},
-                {"item": "minecraft:chest_minecart", "weight": 3},
-                {"item": "minecraft:saddle", "weight": 3},
-                {"item": "minecraft:lead", "weight": 4},
-                {"item": "minecraft:copper_ingot", "weight": 8},
-                {"item": "minecraft:lightning_rod", "weight": 4},
-                {"item": "minecraft:copper_block", "weight": 5}
+                {
+                    "item": "minecraft:rail",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:powered_rail",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:detector_rail",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:activator_rail",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:minecart",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:chest_minecart",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:saddle",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:lead",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:copper_ingot",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:lightning_rod",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:copper_block",
+                    "weight": 5
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:horse", "weight": 4},
-                {"entity": "minecraft:donkey", "weight": 3},
-                {"entity": "minecraft:llama", "weight": 3}
+                {
+                    "entity": "minecraft:horse",
+                    "weight": 4
+                },
+                {
+                    "entity": "minecraft:donkey",
+                    "weight": 3
+                },
+                {
+                    "entity": "minecraft:llama",
+                    "weight": 3
+                }
             ],
             "quests": [
                 {
@@ -1203,6 +2446,26 @@
                     "target": "minecraft:lightning_rod",
                     "count": 1
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "transport_alliance_rails",
+                    "name": "Rail Layer",
+                    "description": "Craft 16 rails",
+                    "type": "CRAFT_ITEM",
+                    "target": "minecraft:rail",
+                    "count": 16
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "transport_coop_distance",
+                    "name": "Cross Country",
+                    "description": "Travel 500m by minecart as a team",
+                    "type": "CUSTOM_STAT",
+                    "target": "minecart_one_cm",
+                    "count": 50000
+                }
             ]
         },
         {
@@ -1211,24 +2474,72 @@
             "displayBlock": "minecraft:moss_block",
             "mobSpawnChance": 0.06,
             "blockPool": [
-                {"item": "minecraft:moss_block", "weight": 8},
-                {"item": "minecraft:azalea", "weight": 5},
-                {"item": "minecraft:flowering_azalea", "weight": 4},
-                {"item": "minecraft:glow_berries", "weight": 6},
-                {"item": "minecraft:spore_blossom", "weight": 3},
-                {"item": "minecraft:rooted_dirt", "weight": 5},
-                {"item": "minecraft:moss_carpet", "weight": 4},
-                {"item": "minecraft:pointed_dripstone", "weight": 5},
-                {"item": "minecraft:dripstone_block", "weight": 6},
-                {"item": "minecraft:raw_copper", "weight": 5},
-                {"item": "minecraft:paper", "weight": 6},
-                {"item": "minecraft:spyglass", "weight": 2}
+                {
+                    "item": "minecraft:moss_block",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:azalea",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:flowering_azalea",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:glow_berries",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:spore_blossom",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:rooted_dirt",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:moss_carpet",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:pointed_dripstone",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:dripstone_block",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:raw_copper",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:paper",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:spyglass",
+                    "weight": 2
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:axolotl", "weight": 3},
-                {"entity": "minecraft:glow_squid", "weight": 3},
-                {"entity": "minecraft:tropical_fish", "weight": 4},
-                {"entity": "minecraft:goat", "weight": 3}
+                {
+                    "entity": "minecraft:axolotl",
+                    "weight": 3
+                },
+                {
+                    "entity": "minecraft:glow_squid",
+                    "weight": 3
+                },
+                {
+                    "entity": "minecraft:tropical_fish",
+                    "weight": 4
+                },
+                {
+                    "entity": "minecraft:goat",
+                    "weight": 3
+                }
             ],
             "quests": [
                 {
@@ -1263,6 +2574,26 @@
                     "target": "walk_one_cm",
                     "count": 100000
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "explore_alliance_walk",
+                    "name": "Trailblazer",
+                    "description": "Walk 500 blocks",
+                    "type": "CUSTOM_STAT",
+                    "target": "walk_one_cm",
+                    "count": 50000
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "explore_coop_copper",
+                    "name": "Copper Expedition",
+                    "description": "Obtain 64 copper ingots as a team",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:copper_ingot",
+                    "count": 64
+                }
             ]
         },
         {
@@ -1271,22 +2602,64 @@
             "displayBlock": "minecraft:obsidian",
             "mobSpawnChance": 0.09,
             "blockPool": [
-                {"item": "minecraft:obsidian", "weight": 10},
-                {"item": "minecraft:crying_obsidian", "weight": 5},
-                {"item": "minecraft:end_stone_bricks", "weight": 8},
-                {"item": "minecraft:purpur_pillar", "weight": 5},
-                {"item": "minecraft:end_rod", "weight": 4},
-                {"item": "minecraft:ender_pearl", "weight": 6},
-                {"item": "minecraft:dragon_breath", "weight": 3},
-                {"item": "minecraft:firework_rocket", "weight": 6},
-                {"item": "minecraft:end_crystal", "weight": 1},
-                {"item": "minecraft:ghast_tear", "weight": 4},
-                {"item": "minecraft:glass", "weight": 6}
+                {
+                    "item": "minecraft:obsidian",
+                    "weight": 10
+                },
+                {
+                    "item": "minecraft:crying_obsidian",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:end_stone_bricks",
+                    "weight": 8
+                },
+                {
+                    "item": "minecraft:purpur_pillar",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:end_rod",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:ender_pearl",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:dragon_breath",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:firework_rocket",
+                    "weight": 6
+                },
+                {
+                    "item": "minecraft:end_crystal",
+                    "weight": 1
+                },
+                {
+                    "item": "minecraft:ghast_tear",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:glass",
+                    "weight": 6
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:enderman", "weight": 8},
-                {"entity": "minecraft:phantom", "weight": 5},
-                {"entity": "minecraft:shulker", "weight": 3}
+                {
+                    "entity": "minecraft:enderman",
+                    "weight": 8
+                },
+                {
+                    "entity": "minecraft:phantom",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:shulker",
+                    "weight": 3
+                }
             ],
             "quests": [
                 {
@@ -1321,6 +2694,26 @@
                     "target": "damage_dealt",
                     "count": 10000
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "dragon_alliance_endermen",
+                    "name": "Ender Slayer",
+                    "description": "Kill 10 endermen",
+                    "type": "KILL_ENTITY",
+                    "target": "minecraft:enderman",
+                    "count": 10
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "dragon_coop_damage",
+                    "name": "War Machine",
+                    "description": "Deal 1000 hearts of damage as a team",
+                    "type": "CUSTOM_STAT",
+                    "target": "damage_dealt",
+                    "count": 20000
+                }
             ]
         },
         {
@@ -1329,21 +2722,60 @@
             "displayBlock": "minecraft:ancient_debris",
             "mobSpawnChance": 0.09,
             "blockPool": [
-                {"item": "minecraft:ancient_debris", "weight": 3},
-                {"item": "minecraft:netherite_scrap", "weight": 4},
-                {"item": "minecraft:netherite_ingot", "weight": 2},
-                {"item": "minecraft:diamond_block", "weight": 3},
-                {"item": "minecraft:gold_block", "weight": 5},
-                {"item": "minecraft:tnt", "weight": 5},
-                {"item": "minecraft:enchanted_golden_apple", "weight": 2},
-                {"item": "minecraft:totem_of_undying", "weight": 2},
-                {"item": "minecraft:trident", "weight": 1},
-                {"item": "minecraft:diamond", "weight": 6}
+                {
+                    "item": "minecraft:ancient_debris",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:netherite_scrap",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:netherite_ingot",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:diamond_block",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:gold_block",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:tnt",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:enchanted_golden_apple",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:totem_of_undying",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:trident",
+                    "weight": 1
+                },
+                {
+                    "item": "minecraft:diamond",
+                    "weight": 6
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:wither_skeleton", "weight": 5},
-                {"entity": "minecraft:piglin_brute", "weight": 4},
-                {"entity": "minecraft:ravager", "weight": 1}
+                {
+                    "entity": "minecraft:wither_skeleton",
+                    "weight": 5
+                },
+                {
+                    "entity": "minecraft:piglin_brute",
+                    "weight": 4
+                },
+                {
+                    "entity": "minecraft:ravager",
+                    "weight": 1
+                }
             ],
             "quests": [
                 {
@@ -1378,32 +2810,100 @@
                     "target": "traded_with_villager",
                     "count": 10
                 }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "netherite_alliance_diamonds",
+                    "name": "Diamond Hoarder",
+                    "description": "Obtain 8 diamonds",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:diamond",
+                    "count": 8
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "netherite_coop_ancient_debris",
+                    "name": "Ancient Excavation",
+                    "description": "Obtain 8 ancient debris as a team",
+                    "type": "OBTAIN_ITEM",
+                    "target": "minecraft:ancient_debris",
+                    "count": 8
+                }
             ]
         },
         {
             "id": 25,
             "name": "Ascension",
             "displayBlock": "minecraft:reinforced_deepslate",
-            "mobSpawnChance": 0.10,
+            "mobSpawnChance": 0.1,
             "blockPool": [
-                {"item": "minecraft:netherite_ingot", "weight": 3},
-                {"item": "minecraft:elytra", "weight": 1},
-                {"item": "minecraft:totem_of_undying", "weight": 3},
-                {"item": "minecraft:enchanted_golden_apple", "weight": 3},
-                {"item": "minecraft:nether_star", "weight": 2},
-                {"item": "minecraft:beacon", "weight": 2},
-                {"item": "minecraft:shulker_shell", "weight": 4},
-                {"item": "minecraft:dragon_egg", "weight": 1},
-                {"item": "minecraft:trident", "weight": 2},
-                {"item": "minecraft:heart_of_the_sea", "weight": 3},
-                {"item": "minecraft:nautilus_shell", "weight": 5},
-                {"item": "minecraft:conduit", "weight": 1}
+                {
+                    "item": "minecraft:netherite_ingot",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:elytra",
+                    "weight": 1
+                },
+                {
+                    "item": "minecraft:totem_of_undying",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:enchanted_golden_apple",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:nether_star",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:beacon",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:shulker_shell",
+                    "weight": 4
+                },
+                {
+                    "item": "minecraft:dragon_egg",
+                    "weight": 1
+                },
+                {
+                    "item": "minecraft:trident",
+                    "weight": 2
+                },
+                {
+                    "item": "minecraft:heart_of_the_sea",
+                    "weight": 3
+                },
+                {
+                    "item": "minecraft:nautilus_shell",
+                    "weight": 5
+                },
+                {
+                    "item": "minecraft:conduit",
+                    "weight": 1
+                }
             ],
             "mobSpawns": [
-                {"entity": "minecraft:warden", "weight": 1},
-                {"entity": "minecraft:elder_guardian", "weight": 1},
-                {"entity": "minecraft:evoker", "weight": 3},
-                {"entity": "minecraft:vindicator", "weight": 4}
+                {
+                    "entity": "minecraft:warden",
+                    "weight": 1
+                },
+                {
+                    "entity": "minecraft:elder_guardian",
+                    "weight": 1
+                },
+                {
+                    "entity": "minecraft:evoker",
+                    "weight": 3
+                },
+                {
+                    "entity": "minecraft:vindicator",
+                    "weight": 4
+                }
             ],
             "quests": [
                 {
@@ -1437,6 +2937,26 @@
                     "type": "CUSTOM_STAT",
                     "target": "raid_win",
                     "count": 1
+                }
+            ],
+            "allianceQuests": [
+                {
+                    "id": "ascend_alliance_lodestone",
+                    "name": "Lodestone Crafter",
+                    "description": "Craft a lodestone",
+                    "type": "CRAFT_ITEM",
+                    "target": "minecraft:lodestone",
+                    "count": 1
+                }
+            ],
+            "coopQuests": [
+                {
+                    "id": "ascend_coop_elites",
+                    "name": "Final Stand",
+                    "description": "Kill 10 evokers as a team",
+                    "type": "KILL_ENTITY",
+                    "target": "minecraft:evoker",
+                    "count": 10
                 }
             ]
         }
